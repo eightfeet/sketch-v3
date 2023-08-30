@@ -12,10 +12,12 @@
   "dependencies": {
     "@tanstack/react-query": "^4.33.0",
     "antd-mobile": "^5.32.1",
+    "antd-mobile-icons": "^0.3.0",
     "postcss-px-to-viewport": "^1.1.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-router-dom": "^6.15.0"
+    "react-router-dom": "^6.15.0",
+    "wc-waterfall": "^0.0.7"
   },
   "devDependencies": {
     "@types/node": "^20.5.7",
