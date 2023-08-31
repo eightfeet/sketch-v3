@@ -2,6 +2,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import React, { useMemo } from "react";
 import { RouterProvider, createHashRouter } from "react-router-dom";
 import { Loading } from "../Loading";
+import './App.scss';
 
 const queryClient = new QueryClient();
 
