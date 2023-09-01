@@ -4,16 +4,16 @@
   left: 0;
   top: 0;
   z-index: 100;
-  background-color: #fff;
+  background-color: var(--adm-color-white);;
 }
 
 .root {
-  padding: 100px 12px 12px;
+  padding: 100Px 12px 12px;
 }
 
 .subnav {
-  background-color: #efefef;
-  border-bottom: 1px solid #ccc;
+  background-color: var(--adm-color-fill-content);
+  border-bottom: 1px solid var(--adm-border-color);
 }
 
 .play {
