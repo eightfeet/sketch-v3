@@ -1,0 +1,17 @@
+
+.root {
+    color: #ccc;
+    text-align: center;
+    min-height: 200Px;
+    flex-direction: column;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    svg {
+        width: 80px;
+        display: block;
+    }
+    .msg {
+        margin-top: 20Px;
+    }
+}
