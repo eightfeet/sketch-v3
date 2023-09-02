@@ -11,7 +11,7 @@
       align-items: center;
       background: rgba(0, 0, 0, 0.7);
       border-radius: 10Px;
-      padding: 40Px 20Px;
+      padding: 20Px 10Px;
       min-width: 350Px;
       box-sizing: border-box;
     }
@@ -26,7 +26,7 @@
     }
 
     .content {
-        padding: 20Px 0;
+        padding: 10Px 0;
     }
 
     .btnbar {
@@ -38,7 +38,7 @@
     .btn {
       cursor: pointer;
       width: 120Px;
-      height: 60Px;
+      height: 40Px;
       text-align: center;
       background: rgba(255, 255, 255, 0.3);
       display: flex;

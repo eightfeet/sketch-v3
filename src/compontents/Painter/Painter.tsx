@@ -277,6 +277,7 @@ const Painter: React.FC<Props> = ({
   const saveCanvasRef = useRef<HTMLCanvasElement>(null);
   const onSave = useCallback(async () => {
     if (!lastImg) return;
+    
     setShowSave(true);
     const ctx = saveCanvasRef.current?.getContext("2d");
     if (!ctx) return;
@@ -284,10 +285,9 @@ const Painter: React.FC<Props> = ({
     ctx.fillRect(
       0,
       0,
-      window.document.body.offsetWidth,
-      window.document.body.offsetHeight
+      window.innerWidth,
+      window.innerHeight
     );
-    
     if (paperwhiteRef.current) {
       ctx.drawImage(paperwhiteRef.current, 0, 0);
     }
@@ -485,8 +485,8 @@ const Painter: React.FC<Props> = ({
       />
       {
         <canvas
-          width={window.document.body.offsetWidth}
-          height={window.document.body.offsetHeight}
+          width={window.innerWidth}
+          height={window.innerHeight}
           ref={saveCanvasRef}
           className={s.savecvs}
         ></canvas>
