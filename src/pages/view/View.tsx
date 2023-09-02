@@ -2,7 +2,7 @@ import { ImageViewer, NavBar, Space } from "antd-mobile";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import useDocumentTitle from "~/hooks/useDocumentTitle";
 import { useSnapshot } from 'valtio'
-import { runningTime } from "~/store";
+import { runningTime, painter } from "~/store";
 import Timer from "./components/Timer";
 import ReactAudioPlayer from "react-audio-player";
 import classNames from 'classnames'
@@ -12,6 +12,7 @@ import { EditFill } from "antd-mobile-icons";
 import SelectedList from "~/compontents/SelectedList";
 import SetDuration from "~/compontents/SetDuration";
 import { useNavigate } from "react-router-dom";
+import Painter from "~/compontents/Painter";
 
 interface Props {
   name?: string;
@@ -23,6 +24,9 @@ const View: React.FC<Props> = ({ name = "view" }) => {
   const imageViewRef = useRef<SlidesRef>(null);
   const [popupVisible, setPopupVisible] = useState(false);
   const { selected = [] } = useSnapshot(runningTime);
+
+  const painterR = useSnapshot(painter);
+
   const navigator = useNavigate();
 
   useEffect(() => {
@@ -30,7 +34,7 @@ const View: React.FC<Props> = ({ name = "view" }) => {
       navigator("/list")
     }
   }, [navigator, selected])
-  
+
 
   const [wranTime, setWranTime] = useState(false);
   const [imgIndex, setImgIndex] = useState(0);
@@ -64,11 +68,13 @@ const View: React.FC<Props> = ({ name = "view" }) => {
   );
 
   return <div className={s.root}>
-    <NavBar className={s.nav} left={
+    {!painterR.showPanter ? <NavBar className={s.nav} left={
       <Space>
-        <EditFill />
+        <EditFill onClick={() => painter.showPanter = true} />
       </Space>
-    } ><span onClick={() => setPopupVisible(true)}>{imgIndex + 1}/{selected.length}</span></NavBar>
+    } >
+      <span onClick={() => setPopupVisible(true)}>{imgIndex + 1}/{selected.length}</span>
+    </NavBar> : null}
     <ImageViewer.Multi
       maxZoom={10}
       images={
@@ -80,12 +86,12 @@ const View: React.FC<Props> = ({ name = "view" }) => {
       ref={imageViewRef}
     />
     <SetDuration>
-      <div className={classNames(s.timer, { [s.timewran]: wranTime })}>
+      <div className={classNames(s.timer, { [s.timewran]: wranTime })} style={{ opacity: !painterR.showPanter ? 1 : 0}}>
         <Timer
           key={imgIndex}
           onComplete={handleComplete}
           onUpdate={onUpdate}
-          isPlaying={true}
+          isPlaying={!painterR.showPanter}
           wranTime={true}
         />
         <ReactAudioPlayer ref={player} src="./warning.mp3" />
@@ -94,6 +100,20 @@ const View: React.FC<Props> = ({ name = "view" }) => {
     <SelectedList
       visible={popupVisible}
       onMaskClick={() => setPopupVisible(false)}
+    />
+    <Painter
+      visible={painterR.showPanter}
+      onClose={() => painter.showPanter = false}
+      onChange={() => "onChangePainter"}
+      lineColor={painterR.lineColor}
+      lineWidth={painterR.lineWidth || 1}
+      bgColor={painter.panterBgColor}
+      bgAlph={painter.bgAlph}
+      eraserAlph={painter.eraserAlph}
+      eraserWidth={painter.eraserWidth}
+      lineAlph={painter.lineAlph}
+      historyRecords={1000}
+      auth={true}
     />
   </div>;
 };

@@ -11,3 +11,19 @@ interface RunningTime {
 export const runningTime = proxy<RunningTime>({
     duration: 300
 })
+
+
+interface PainterData {
+    showPanter: boolean;
+    lineColor?: string;
+    lineWidth?: number;
+    panterBgColor?: string;
+    bgAlph?: number;
+    eraserAlph?: number;
+    eraserWidth?: number;
+    lineAlph?: number;
+}
+
+export const painter = proxy<PainterData>({
+    showPanter: false,
+})

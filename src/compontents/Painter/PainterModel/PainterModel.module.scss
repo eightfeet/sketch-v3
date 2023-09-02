@@ -1,0 +1,51 @@
+
+.cleanbox {
+    width: 100vw;
+    height: 100vh;
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    >div{
+      align-items: center;
+      background: rgba(0, 0, 0, 0.7);
+      border-radius: 10Px;
+      padding: 40Px 20Px;
+      min-width: 350Px;
+      box-sizing: border-box;
+    }
+  
+    .title {
+      display: flex;
+      padding: 10Px 0;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20Px;
+      margin: 0;
+    }
+
+    .content {
+        padding: 20Px 0;
+    }
+
+    .btnbar {
+      display: flex;
+      margin-top: 20Px;
+      width: 100%;
+      justify-content: space-around;
+    }
+    .btn {
+      cursor: pointer;
+      width: 120Px;
+      height: 60Px;
+      text-align: center;
+      background: rgba(255, 255, 255, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10Px;
+      flex: 1;
+      margin: 0 10Px;
+    }
+  }

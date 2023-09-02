@@ -1,0 +1,36 @@
+.color {
+  border: 1px solid #666;
+  border-radius: 4Px;
+  margin: 0;
+  width: auto;
+  overflow: visible;
+  flex-shrink: 0;
+  background: transparent;
+
+  /* inherit font & color from ancestor */
+  color: inherit;
+  font: inherit;
+
+  /* Normalize `line-height`. Cannot be changed from `normal` in Firefox 4+. */
+  line-height: normal;
+  /* Corrects font smoothing for webkit */
+  -webkit-font-smoothing: inherit;
+  -moz-osx-font-smoothing: inherit;
+  /* Corrects inability to style clickable `input` types in iOS */
+  -webkit-appearance: none;
+  width: var(--adm-font-size-10);
+  height: var(--adm-font-size-10);
+  margin-right: 20px;
+}
+
+.slider {
+}
+
+.wrap {
+  display: flex;
+  align-items: center;
+  padding: 10Px 0;
+  .ml {
+    margin-left: 10Px;
+  }
+}
