@@ -1,0 +1,1 @@
+import{k as n}from"./index-d1054891.js";const e=t=>{document.title=t};function c(t){n.useEffect(()=>{const o=document.title;return e(t),document.body.classList.remove("adm-overflow-hidden"),()=>{e(o)}},[t])}export{c as u};
