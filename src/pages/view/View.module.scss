@@ -1,0 +1,25 @@
+.timer {
+  position: absolute;
+  z-index: 2000;
+  font-size: var(--adm-font-size-main);
+  right: 10px;
+  top: 10px;
+  background-color: transparent;
+  transition: 500ms all;
+  border-radius: 70px;
+  user-select: none;
+}
+
+.timewran {
+  right: calc(50% - 70px);
+  top: calc(50% - 70px);
+  transform: scale(3);
+  border-radius: 70px;
+  background-color: rgba(255, 255, 255, 0.7);
+  box-shadow: 0px 0px 10px #0000006f;
+}
+
+.nav {
+  position: relative;
+  z-index: 2000;
+}

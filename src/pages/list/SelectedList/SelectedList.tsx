@@ -4,9 +4,10 @@ import { useMediaQuery } from "~/hooks/useMediaQuery";
 import s from "./SelectedList.module.scss";
 import ImageCard from "../ImageCard";
 import Empty from "~/compontents/Empty/Empty";
+import { ImageItem } from "~/api";
 
 interface Props {
-  data: any[];
+  data: ImageItem[];
   onUpdate?: (data: any[]) => void;
   onClear?: () => void;
 }
@@ -55,9 +56,10 @@ const SelectedList: React.FC<Props & PopupProps> = ({
           <wc-waterfall {...displaywf}>
             {data.map((item, index) => (
               <ImageCard
-                key={item}
+                key={item._id}
                 selected
                 onToggle={() => handleToggle(index)}
+                src={item.src}
               />
             ))}
           </wc-waterfall>

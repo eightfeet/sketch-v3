@@ -1,6 +1,13 @@
-import { ImageViewer } from "antd-mobile";
-import React from "react";
+import { ImageViewer, NavBar } from "antd-mobile";
+import React, { useCallback, useRef, useState } from "react";
 import useDocumentTitle from "~/hooks/useDocumentTitle";
+import { useSnapshot } from 'valtio'
+import { runningTime } from "~/store";
+import Timer from "./components/Timer";
+import ReactAudioPlayer from "react-audio-player";
+import classNames from 'classnames'
+import s from './View.module.scss'
+import { SlidesRef } from "antd-mobile/es/components/image-viewer/slides";
 
 interface Props {
   name?: string;
@@ -8,19 +15,63 @@ interface Props {
 
 const View: React.FC<Props> = ({ name = "view" }) => {
   useDocumentTitle(name);
+  const player = useRef<ReactAudioPlayer>(null);
+  const imageViewRef = useRef<SlidesRef>(null);
+
+  const { selected = [] } = useSnapshot(runningTime);
+  const [wranTime, setWranTime] = useState(false);
+  const [imgIndex, setImgIndex] = useState(0);
+
+  const handleIndexChange = useCallback(
+    (index: number) => setImgIndex(index),
+    [],
+  )
+
+  const handleComplete = useCallback(() => {
+    const next = imgIndex < selected.length - 1 ? imgIndex + 1 : 0;
+    imageViewRef.current?.swipeTo(next)
+    setWranTime(false);
+    setImgIndex(next)
+  }, [imgIndex, selected.length]);
+
+  const onUpdate = useCallback(
+    (remainingTime: number) => {
+      if (remainingTime === 4) {
+        player.current?.audioEl.current?.play();
+        setWranTime(true);
+      }
+      if (remainingTime < 4) {
+        !wranTime && setWranTime(false);
+      }
+      if (remainingTime > 4) {
+        wranTime && setWranTime(true);
+      }
+    },
+    [wranTime]
+  );
+
   return <div>
+    <NavBar className={s.nav} onBack={ () => imageViewRef.current?.swipeTo(0)} />
     <ImageViewer.Multi
-        images={
-          [
-            'https://images.unsplash.com/photo-1620476214170-1d8080f65cdb?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=3150&q=80',
-            'https://images.unsplash.com/photo-1601128533718-374ffcca299b?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=3128&q=80',
-            'https://images.unsplash.com/photo-1567945716310-4745a6b7844b?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=3113&q=80',
-            'https://images.unsplash.com/photo-1624993590528-4ee743c9896e?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=200&h=1000&q=80',
-          ]
-        }
-        visible
-        defaultIndex={1}
+      maxZoom={10}
+      images={
+        selected?.map(Item => Item.src)
+      }
+      visible
+      defaultIndex={imgIndex}
+      onIndexChange={handleIndexChange}
+      ref={imageViewRef}
+    />
+    <div className={classNames(s.timer, { [s.timewran]: wranTime })}>
+      <Timer
+        key={imgIndex}
+        onComplete={handleComplete}
+        onUpdate={onUpdate}
+        isPlaying={true}
+        wranTime={true}
       />
+      <ReactAudioPlayer ref={player} src="./warning.mp3" />
+    </div>
   </div>;
 };
 

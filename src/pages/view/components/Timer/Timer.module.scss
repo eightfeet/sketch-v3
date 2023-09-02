@@ -1,0 +1,21 @@
+.timercount {
+  color: rgb(160, 160, 160);
+  text-align: center;
+}
+.index {
+  font-size: var(--adm-font-size-main);
+  display: block;
+}
+.time {
+  font-size: var(--adm-font-size-main);
+}
+
+.wrantime {
+  .index {
+    display: none;
+  }
+  .time {
+    font-weight: bold;
+    color: #555;
+  }
+}

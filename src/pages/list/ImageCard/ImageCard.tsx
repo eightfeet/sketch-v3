@@ -58,7 +58,6 @@ const ImageCard: React.FC<Props & React.HTMLAttributes<HTMLDivElement>> = ({
           fit="fill"
           style={{
             background: "#eee",
-            minHeight: Math.floor(Math.random() * (300 - 100) + 100),
           }}
         />
       </div>

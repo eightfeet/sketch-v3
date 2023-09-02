@@ -5,11 +5,14 @@ import { Button, FloatingBubble, InfiniteScroll, JumboTabs, NavBar } from "antd-
 import s from "./List.module.scss";
 import { useMediaQuery } from "~/hooks/useMediaQuery";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { mock, pagesize } from "~/api";
+import { ImageItem, mock, pagesize } from "~/api";
 import { Loading } from "~/compontents/Loading";
 import ImageCard from "./ImageCard";
 import SelectedList from "./SelectedList";
-import { PlayOutline } from "antd-mobile-icons";
+import { useSnapshot } from 'valtio';
+import { runningTime } from "~/store";
+import { useNavigate } from "react-router-dom";
+import PlayIcon from "~/compontents/PlayIcon/PlayIcon";
 // import loading from '~/compontents/Loading';
 
 interface Props {
@@ -18,6 +21,8 @@ interface Props {
 
 const List: React.FC<Props> = ({ name = "list" }) => {
   useDocumentTitle(name);
+  const { selected } = useSnapshot(runningTime);
+  const navigator = useNavigate();
   const [popupVisible, setPopupVisible] = useState(false);
   const matches768 = useMediaQuery("(min-width: 768px)");
   const matches1024 = useMediaQuery("(min-width: 1024px)");
@@ -62,10 +67,36 @@ const List: React.FC<Props> = ({ name = "list" }) => {
   // 数据解构
   const lists = data?.pages.flatMap((item) => item.data) || [];
 
-  const [selected, setSelected] = useState([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
   const tags = [
     1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
   ];
+
+  const onToggleSelect = useCallback(
+    (state: boolean, item: ImageItem) => {
+      if (!state) {
+        runningTime.selected = (runningTime.selected || []).concat(item)
+      }
+      if (state) {
+        runningTime.selected = runningTime.selected?.filter(el => el._id !== item._id)
+      }
+    },
+    [],
+  )
+
+  const onClear = useCallback(
+    () => {
+      runningTime.selected = [];
+      setPopupVisible(false);
+    },
+    [],
+  );
+
+  const onPlay = useCallback(
+    () => {
+      navigator("/view");
+    },
+    [navigator],
+  );
 
   return (
     <div className={s.root}>
@@ -76,7 +107,7 @@ const List: React.FC<Props> = ({ name = "list" }) => {
       {/* 数据展示 */}
       <div className={s.nav}>
         <NavBar
-          onBack={() => {}}
+          onBack={() => { }}
           right={
             <>
               <Button
@@ -84,7 +115,7 @@ const List: React.FC<Props> = ({ name = "list" }) => {
                 size="mini"
                 onClick={() => setPopupVisible(true)}
               >
-                已选
+                已选 {selected?.length || 0}
               </Button>
             </>
           }
@@ -99,13 +130,18 @@ const List: React.FC<Props> = ({ name = "list" }) => {
       </div>
 
       <wc-waterfall {...mainwf}>
-        {lists.map((item) => (
-          <ImageCard
-            key={item}
-            toggleType={["block", "icon"]}
-            selected={Math.random() > 0.5}
-          />
-        ))}
+        {lists.map((item, index) => {
+          const isSelected = selected?.some(selectItem => item._id === selectItem._id);
+          return (
+            <ImageCard
+              key={index}
+              src={item.src}
+              toggleType={isSelected ? ["icon"] : ["block", "icon"]}
+              selected={isSelected}
+              onToggle={(state: boolean) => onToggleSelect(state, item)}
+            />
+          )
+        })}
       </wc-waterfall>
 
       {/* 下一页 */}
@@ -116,17 +152,18 @@ const List: React.FC<Props> = ({ name = "list" }) => {
         />
       ) : null}
       <SelectedList
-        data={selected}
+        data={[...runningTime.selected || []]}
         visible={popupVisible}
         onMaskClick={() => setPopupVisible(false)}
-        onUpdate={(data) => setSelected(data)}
+        onUpdate={(data) => runningTime.selected = data}
+        onClear={onClear}
       />
       <FloatingBubble
         axis="xy"
         magnetic="x"
         className={s.play}
       >
-        <PlayOutline fontSize={32} />
+        <PlayIcon fontSize={32} onClick={onPlay} />
       </FloatingBubble>
     </div>
   );
