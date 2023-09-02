@@ -9,8 +9,6 @@ import { runningTime } from "~/store";
 
 dayjs.extend(duration);
 
-
-
 interface Props {
   onComplete: () => void;
   info?: string;

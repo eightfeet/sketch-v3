@@ -8,5 +8,5 @@ interface RunningTime {
 }
 
 export const runningTime = proxy<RunningTime>({
-    duration: 0.1
+    duration: 5
 })
