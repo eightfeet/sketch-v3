@@ -68,7 +68,7 @@ const View: React.FC<Props> = ({ name = "view" }) => {
   );
 
   return <div className={s.root}>
-    {!painterR.showPanter ? <NavBar className={s.nav} left={
+    {!painterR.showPanter ? <NavBar className={s.nav} onBack={() => navigator(-1)} left={
       <Space>
         <EditFill onClick={() => painter.showPanter = true} />
       </Space>

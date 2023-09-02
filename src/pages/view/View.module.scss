@@ -11,17 +11,17 @@
   position: absolute;
   z-index: 2000;
   font-size: var(--adm-font-size-main);
-  right: 10px;
-  top: 10px;
+  right: 10Px;
+  top: 10Px;
   background-color: transparent;
   transition: 500ms all;
-  border-radius: 70px;
+  border-radius: 70Px;
   user-select: none;
 }
 
 .timewran {
-  right: calc(50% - 70px);
-  top: calc(50% - 70px);
+  right: calc(50% - 35Px);
+  top: calc(50% - 35Px);
   transform: scale(3);
   border-radius: 70px;
   background-color: rgba(255, 255, 255, 0.7);
