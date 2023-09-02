@@ -1,1 +1,0 @@
-import{j as e,L as o}from"./index-d1054891.js";import{u as t}from"./useDocumentTitle-b3eafdc0.js";import{S as r}from"./space-97f5b3b0.js";const i=({name:s="home"})=>(t(s),e.jsx("div",{children:e.jsxs(r,{children:[e.jsx(o,{to:"/",children:"首页"}),e.jsx(o,{to:"/list",children:"列表"}),e.jsx(o,{to:"/view",children:"详情"})]})})),l=i;export{l as default};
