@@ -4,20 +4,18 @@ import { useMediaQuery } from "~/hooks/useMediaQuery";
 import s from "./SelectedList.module.scss";
 import ImageCard from "../ImageCard";
 import Empty from "~/compontents/Empty/Empty";
-import { ImageItem } from "~/api";
+import { useSnapshot } from 'valtio'
+import { runningTime } from "~/store";
 
 interface Props {
-  data: ImageItem[];
-  onUpdate?: (data: any[]) => void;
   onClear?: () => void;
 }
 
 const SelectedList: React.FC<Props & PopupProps> = ({
-  data,
-  onUpdate,
   onClear,
   ...popupProps
 }) => {
+  const runningTimeR = useSnapshot(runningTime)
   const matches768 = useMediaQuery("(min-width: 768px)");
   const matches1024 = useMediaQuery("(min-width: 1024px)");
   const displaywf = { cols: 4, gap: 10 };
@@ -32,9 +30,16 @@ const SelectedList: React.FC<Props & PopupProps> = ({
 
   const handleToggle = useCallback(
     (index: number) => {
-      onUpdate?.([...data].filter((_, ind) => ind !== index));
+      runningTime.selected = [...runningTime.selected || []].filter((_, ind) => ind !== index)
     },
-    [data, onUpdate]
+    []
+  );
+
+  const clear = useCallback(
+    () => {
+      runningTime.selected = []
+    },
+    [],
   );
 
   return (
@@ -45,7 +50,7 @@ const SelectedList: React.FC<Props & PopupProps> = ({
         left={`已选择 ${10}`}
         right={
           onClear && (
-            <Button fill="none" size="mini" onClick={() => onClear?.()}>
+            <Button fill="none" size="mini" onClick={clear}>
               清除
             </Button>
           )
@@ -54,7 +59,7 @@ const SelectedList: React.FC<Props & PopupProps> = ({
       <div className={s.content}>
         <div className={s.pupup}>
           <wc-waterfall {...displaywf}>
-            {data.map((item, index) => (
+            {runningTimeR.selected?.map((item, index) => (
               <ImageCard
                 key={item._id}
                 selected
@@ -63,7 +68,7 @@ const SelectedList: React.FC<Props & PopupProps> = ({
               />
             ))}
           </wc-waterfall>
-          {!data.length ? <Empty /> : null}
+          {!runningTimeR.selected?.length ? <Empty /> : null}
         </div>
       </div>
     </Popup>

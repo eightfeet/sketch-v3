@@ -7,8 +7,8 @@ import { useMediaQuery } from "~/hooks/useMediaQuery";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { ImageItem, mock, pagesize } from "~/api";
 import { Loading } from "~/compontents/Loading";
-import ImageCard from "./ImageCard";
-import SelectedList from "./SelectedList";
+import ImageCard from "~/compontents/ImageCard";
+import SelectedList from "~/compontents/SelectedList";
 import { useSnapshot } from 'valtio';
 import { runningTime } from "~/store";
 import { useNavigate } from "react-router-dom";
@@ -85,7 +85,6 @@ const List: React.FC<Props> = ({ name = "list" }) => {
 
   const onClear = useCallback(
     () => {
-      runningTime.selected = [];
       setPopupVisible(false);
     },
     [],
@@ -152,10 +151,8 @@ const List: React.FC<Props> = ({ name = "list" }) => {
         />
       ) : null}
       <SelectedList
-        data={[...runningTime.selected || []]}
         visible={popupVisible}
         onMaskClick={() => setPopupVisible(false)}
-        onUpdate={(data) => runningTime.selected = data}
         onClear={onClear}
       />
       <FloatingBubble

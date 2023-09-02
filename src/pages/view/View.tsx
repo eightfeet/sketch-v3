@@ -1,4 +1,4 @@
-import { ImageViewer, NavBar } from "antd-mobile";
+import { ImageViewer, NavBar, Space } from "antd-mobile";
 import React, { useCallback, useRef, useState } from "react";
 import useDocumentTitle from "~/hooks/useDocumentTitle";
 import { useSnapshot } from 'valtio'
@@ -8,6 +8,7 @@ import ReactAudioPlayer from "react-audio-player";
 import classNames from 'classnames'
 import s from './View.module.scss'
 import { SlidesRef } from "antd-mobile/es/components/image-viewer/slides";
+import { EditFill, LeftOutline } from "antd-mobile-icons";
 
 interface Props {
   name?: string;
@@ -50,8 +51,13 @@ const View: React.FC<Props> = ({ name = "view" }) => {
     [wranTime]
   );
 
-  return <div>
-    <NavBar className={s.nav} onBack={ () => imageViewRef.current?.swipeTo(0)} />
+  return <div className={s.root}>
+    <NavBar className={s.nav} backArrow={false} left={
+      <Space>
+        <LeftOutline />
+        <EditFill />
+      </Space>
+    } >{imgIndex + 1}/{selected.length}</NavBar>
     <ImageViewer.Multi
       maxZoom={10}
       images={
