@@ -1,5 +1,5 @@
 import { ImageViewer, NavBar, Space } from "antd-mobile";
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import useDocumentTitle from "~/hooks/useDocumentTitle";
 import { useSnapshot } from 'valtio'
 import { runningTime } from "~/store";
@@ -11,6 +11,7 @@ import { SlidesRef } from "antd-mobile/es/components/image-viewer/slides";
 import { EditFill } from "antd-mobile-icons";
 import SelectedList from "~/compontents/SelectedList";
 import SetDuration from "~/compontents/SetDuration";
+import { useNavigate } from "react-router-dom";
 
 interface Props {
   name?: string;
@@ -21,8 +22,16 @@ const View: React.FC<Props> = ({ name = "view" }) => {
   const player = useRef<ReactAudioPlayer>(null);
   const imageViewRef = useRef<SlidesRef>(null);
   const [popupVisible, setPopupVisible] = useState(false);
-
   const { selected = [] } = useSnapshot(runningTime);
+  const navigator = useNavigate();
+
+  useEffect(() => {
+    if (!selected.length) {
+      navigator("/list")
+    }
+  }, [navigator, selected])
+  
+
   const [wranTime, setWranTime] = useState(false);
   const [imgIndex, setImgIndex] = useState(0);
 
