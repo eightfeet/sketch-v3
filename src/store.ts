@@ -4,9 +4,10 @@ import { ImageItem } from "./api";
 
 interface RunningTime {
     selected?: ImageItem[];
-    duration: number
+    duration: number;
+    formatTime?: string;
 }
 
 export const runningTime = proxy<RunningTime>({
-    duration: 5
+    duration: 300
 })

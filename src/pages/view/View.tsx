@@ -8,7 +8,9 @@ import ReactAudioPlayer from "react-audio-player";
 import classNames from 'classnames'
 import s from './View.module.scss'
 import { SlidesRef } from "antd-mobile/es/components/image-viewer/slides";
-import { EditFill, LeftOutline } from "antd-mobile-icons";
+import { EditFill } from "antd-mobile-icons";
+import SelectedList from "~/compontents/SelectedList";
+import SetDuration from "~/compontents/SetDuration";
 
 interface Props {
   name?: string;
@@ -18,6 +20,7 @@ const View: React.FC<Props> = ({ name = "view" }) => {
   useDocumentTitle(name);
   const player = useRef<ReactAudioPlayer>(null);
   const imageViewRef = useRef<SlidesRef>(null);
+  const [popupVisible, setPopupVisible] = useState(false);
 
   const { selected = [] } = useSnapshot(runningTime);
   const [wranTime, setWranTime] = useState(false);
@@ -52,12 +55,11 @@ const View: React.FC<Props> = ({ name = "view" }) => {
   );
 
   return <div className={s.root}>
-    <NavBar className={s.nav} backArrow={false} left={
+    <NavBar className={s.nav} left={
       <Space>
-        <LeftOutline />
         <EditFill />
       </Space>
-    } >{imgIndex + 1}/{selected.length}</NavBar>
+    } ><span onClick={() => setPopupVisible(true)}>{imgIndex + 1}/{selected.length}</span></NavBar>
     <ImageViewer.Multi
       maxZoom={10}
       images={
@@ -68,16 +70,22 @@ const View: React.FC<Props> = ({ name = "view" }) => {
       onIndexChange={handleIndexChange}
       ref={imageViewRef}
     />
-    <div className={classNames(s.timer, { [s.timewran]: wranTime })}>
-      <Timer
-        key={imgIndex}
-        onComplete={handleComplete}
-        onUpdate={onUpdate}
-        isPlaying={true}
-        wranTime={true}
-      />
-      <ReactAudioPlayer ref={player} src="./warning.mp3" />
-    </div>
+    <SetDuration>
+      <div className={classNames(s.timer, { [s.timewran]: wranTime })}>
+        <Timer
+          key={imgIndex}
+          onComplete={handleComplete}
+          onUpdate={onUpdate}
+          isPlaying={true}
+          wranTime={true}
+        />
+        <ReactAudioPlayer ref={player} src="./warning.mp3" />
+      </div>
+    </SetDuration>
+    <SelectedList
+      visible={popupVisible}
+      onMaskClick={() => setPopupVisible(false)}
+    />
   </div>;
 };
 

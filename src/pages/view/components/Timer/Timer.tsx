@@ -59,7 +59,7 @@ const Timer: React.FC<Props> = ({
   return (
     <CountdownCircleTimer
       isPlaying={isPlaying}
-      duration={(runningTimeR.duration || 0) * 60}
+      duration={(runningTimeR.duration || 0)}
       colors={["#004777", "#F7B801", "#A30000", "#A30000"]}
       colorsTime={[60, 30, 20, 0]}
       trailColor={"rgba(144,144,144,0.5)"}
