@@ -238,16 +238,18 @@
 }
 
 .playcontent {
+  text-align: center;
   label {
-    margin-right: 10px;
+    margin-right: 10Px;
   }
   input {
     border: 1 solid #333;
     outline: none;
-    min-width: 200px;
+    height: 35Px;
+    min-width: 150Px;
   }
   span {
-    margin-left: 10px;
+    margin-left: 10Px;
   }
 }
 

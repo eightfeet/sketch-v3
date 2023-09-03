@@ -8,7 +8,7 @@ import ReactAudioPlayer from "react-audio-player";
 import classNames from 'classnames'
 import s from './View.module.scss'
 import { SlidesRef } from "antd-mobile/es/components/image-viewer/slides";
-import { EditFill } from "antd-mobile-icons";
+import { EditSOutline } from "antd-mobile-icons";
 import SelectedList from "~/compontents/SelectedList";
 import SetDuration from "~/compontents/SetDuration";
 import { useNavigate } from "react-router-dom";
@@ -70,7 +70,7 @@ const View: React.FC<Props> = ({ name = "view" }) => {
   return <div className={s.root}>
     {!painterR.showPanter ? <NavBar className={s.nav} onBack={() => navigator(-1)} left={
       <Space>
-        <EditFill onClick={() => painter.showPanter = true} />
+        <EditSOutline onClick={() => painter.showPanter = true} fontSize={24} />
       </Space>
     } >
       <span onClick={() => setPopupVisible(true)}>{imgIndex + 1}/{selected.length}</span>
