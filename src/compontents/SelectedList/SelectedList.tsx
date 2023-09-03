@@ -9,10 +9,12 @@ import { runningTime } from "~/store";
 
 interface Props {
   onClear?: () => void;
+  clearText?: string;
 }
 
 const SelectedList: React.FC<Props & PopupProps> = ({
   onClear,
+  clearText,
   ...popupProps
 }) => {
   const runningTimeR = useSnapshot(runningTime)
@@ -37,9 +39,10 @@ const SelectedList: React.FC<Props & PopupProps> = ({
 
   const clear = useCallback(
     () => {
-      runningTime.selected = []
+      runningTime.selected = [];
+      onClear?.()
     },
-    [],
+    [onClear],
   );
 
   return (
@@ -49,11 +52,9 @@ const SelectedList: React.FC<Props & PopupProps> = ({
         backArrow={false}
         left={`已选择 ${10}`}
         right={
-          onClear && (
-            <Button fill="none" size="mini" onClick={clear}>
-              清除
-            </Button>
-          )
+          <Button fill="none" size="mini" onClick={clear}>
+            {clearText || "清除"}
+          </Button>
         }
       ></NavBar>
       <div className={s.content}>

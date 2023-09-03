@@ -1,6 +1,6 @@
 export const pagesize = 5;
 
-const mockImg = [
+export const mockImg = [
   "https://www.eightfeet.cn/md1/assets/models/037-x&840&696.jpg",
   "https://www.eightfeet.cn/md1/assets/models/038-x&902&568.jpg",
   "https://www.eightfeet.cn/md1/assets/models/044-y&420&647.jpg",

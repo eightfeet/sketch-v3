@@ -1,7 +1,7 @@
 import React, { useCallback, useRef, useState } from "react";
 import "wc-waterfall";
 import useDocumentTitle from "~/hooks/useDocumentTitle";
-import { Button, FloatingBubble, InfiniteScroll, JumboTabs, NavBar } from "antd-mobile";
+import { Badge, FloatingBubble, InfiniteScroll, NavBar, Space } from "antd-mobile";
 import s from "./List.module.scss";
 import { useMediaQuery } from "~/hooks/useMediaQuery";
 import { useInfiniteQuery } from "@tanstack/react-query";
@@ -13,6 +13,8 @@ import { useSnapshot } from 'valtio';
 import { runningTime } from "~/store";
 import { useNavigate } from "react-router-dom";
 import PlayIcon from "~/compontents/PlayIcon/PlayIcon";
+import { FilterOutline, PicturesOutline } from "antd-mobile-icons";
+import Filter from "~/compontents/Filter";
 // import loading from '~/compontents/Loading';
 
 interface Props {
@@ -24,6 +26,8 @@ const List: React.FC<Props> = ({ name = "list" }) => {
   const { selected } = useSnapshot(runningTime);
   const navigator = useNavigate();
   const [popupVisible, setPopupVisible] = useState(false);
+  const [filterPopupVisible, setFilterPopupVisible] = useState(false);
+  
   const matches768 = useMediaQuery("(min-width: 768px)");
   const matches1024 = useMediaQuery("(min-width: 1024px)");
   const mainwf = { cols: 3, gap: 10 };
@@ -108,24 +112,17 @@ const List: React.FC<Props> = ({ name = "list" }) => {
         <NavBar
           onBack={() => { }}
           right={
-            <>
-              <Button
-                fill="none"
-                size="mini"
-                onClick={() => setPopupVisible(true)}
-              >
-                已选 {selected?.length || 0}
-              </Button>
-            </>
+            <Space>
+              <Badge content={selected?.length || null}>
+                <PicturesOutline fontSize={24} onClick={() => setPopupVisible(true)} />
+              </Badge>
+              <span>&nbsp;</span>
+              <FilterOutline fontSize={24} onClick={() => setFilterPopupVisible(true)} />
+            </Space>
           }
         >
-          标题
+          选择图片
         </NavBar>
-        <JumboTabs className={s.subnav} defaultActiveKey="1">
-          {tags.map((item) => (
-            <JumboTabs.Tab title={null} description="描述文案" key={item} />
-          ))}
-        </JumboTabs>
       </div>
 
       <wc-waterfall {...mainwf}>
@@ -162,6 +159,7 @@ const List: React.FC<Props> = ({ name = "list" }) => {
       >
         <PlayIcon fontSize={32} onClick={onPlay} />
       </FloatingBubble>
+      <Filter visible={filterPopupVisible} onMaskClick={() => setFilterPopupVisible(false)} />
     </div>
   );
 };
