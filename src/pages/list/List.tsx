@@ -15,6 +15,7 @@ import { useNavigate } from "react-router-dom";
 import PlayIcon from "~/compontents/PlayIcon/PlayIcon";
 import { FilterOutline, PicturesOutline } from "antd-mobile-icons";
 import Filter from "~/compontents/Filter";
+import classNames from 'classnames'
 // import loading from '~/compontents/Loading';
 
 interface Props {
@@ -70,10 +71,6 @@ const List: React.FC<Props> = ({ name = "list" }) => {
 
   // 数据解构
   const lists = data?.pages.flatMap((item) => item.data) || [];
-
-  const tags = [
-    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
-  ];
 
   const onToggleSelect = useCallback(
     (state: boolean, item: ImageItem) => {
@@ -155,9 +152,10 @@ const List: React.FC<Props> = ({ name = "list" }) => {
       <FloatingBubble
         axis="xy"
         magnetic="x"
-        className={s.play}
+        className={classNames(s.play, {[s.disablePlay]: !selected?.length})}
+        
       >
-        <PlayIcon fontSize={32} onClick={onPlay} />
+        <PlayIcon fontSize={32} onClick={() => selected?.length && onPlay()} />
       </FloatingBubble>
       <Filter visible={filterPopupVisible} onMaskClick={() => setFilterPopupVisible(false)} />
     </div>

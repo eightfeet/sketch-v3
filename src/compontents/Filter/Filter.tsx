@@ -1,106 +1,133 @@
-import React from 'react';
+import React, { useCallback, useRef } from 'react';
 // import s from './Filter.module.scss';
 import { Avatar, Form, Popup, PopupProps, Selector } from 'antd-mobile';
 import { FormItem } from 'antd-mobile/es/components/form/form-item';
 import { mockImg } from '~/api';
+import { PicturesOutline } from 'antd-mobile-icons';
 
 interface Props {
 
 }
 
-const typesobj = [
-    {
-        label: "人物",
-        value: "rw"
-    },
-    {
-        label: "静物",
-        value: "jw"
-    },
-]
+enum category {
+    全部 = "0",
+    人物 = "1",
+    静物 = "2"
+}
 
-const gender = [
-    {
-        label: "男",
-        value: "n"
-    },
-    {
-        label: "女",
-        value: "v"
-    },
-    {
-        label: "组合",
-        value: "zh"
-    },
-]
+enum gender {
+    全部 = "0",
+    男 = "1",
+    女 = "2",
+    组合 = "3"
+}
 
-const types = [
-    {
-        label: "动态",
-        value: "dt"
-    },
-    {
-        label: "角色",
-        value: "js"
-    },
-    {
-        label: "头像",
-        value: "tx"
-    },
-    {
-        label: "半身",
-        value: "female"
-    },
-    {
-        label: "手足",
-        value: "stilllife"
-    },
-    {
-        label: "结构",
-        value: "jg"
-    },
-    {
-        label: "动漫",
-        value: "dm"
-    },
-]
+enum sub {
+    全部 = "0",
+    动态 = "1",
+    角色 = "2",
+    头像 = "3",
+    半身 = "4",
+    手足 = "5",
+    五官 = "6",
+    解剖 = "7",
+    动漫 = "8"
+}
+
+console.log("Object.keys(category)", Object.keys(category))
+console.log("Object.values(category)", Object.values(category))
+
+
+const getOptions = (obj: { [s: string]: string; }) => Object.keys(obj).map((key, index) => ({
+    label: key,
+    value: Object.values(obj)[index]
+}))
 
 const Filter: React.FC<Props & PopupProps> = ({ ...props }) => {
+    const form = Form.useForm()[0];
+
+    const lastAllFields = useRef<string[]>(["category", "gender", "sub", "md"]);
+
+    const filterLastAll = useCallback(
+        (valobj: { [s: string]: string[] | undefined; }) => {
+            const lastAll: string[] = [];
+            for (const key in valobj) {
+                if (Object.prototype.hasOwnProperty.call(valobj, key)) {
+                    const element = valobj[key];
+                    if (element?.includes("0")) {
+                        lastAll.push(key)
+                    }
+                    lastAll.push()
+                }
+            }
+            lastAllFields.current = lastAll;
+        },
+        [],
+    );
+
+    const onValuesChange = useCallback(
+        (valobj: { [s: string]: string[] | undefined; } | ArrayLike<unknown>, values: { [key: string]: any }) => {
+            const key = Object.keys(valobj)[0]
+            const val = Object.values(valobj)[0] as string[];
+            // 当前内容有全选
+            if (val?.includes("0")) {
+                console.log("you", key, lastAllFields.current);
+                
+                if (lastAllFields.current.includes(key)) {
+                    console.log(111);
+                    
+                    form.setFieldValue(key, val.filter(item => item === "0"))
+                } else {
+                    form.setFieldValue(key, ["0"])
+                }   
+            }
+            filterLastAll(values)
+        },
+        [filterLastAll, form],
+    );
+
     return (
         <Popup {...props}>
-            <Form>
-                <FormItem label="类别" >
+            <Form form={form} onValuesChange={onValuesChange}>
+                <FormItem name="category" label="类别" >
                     <Selector
+                        multiple
                         options={
-                            typesobj
+                            getOptions(category)
                         }
                     />
                 </FormItem>
-                <FormItem label="性别" >
+                <FormItem name="gender" label="性别" >
                     <Selector
+                        multiple
                         options={
-                            gender
+                            getOptions(gender)
                         }
                     />
                 </FormItem>
-                <FormItem label="类别" >
+                <FormItem name="sub" label="属性" >
                     <Selector
+                        multiple
                         options={
-                            types
+                            getOptions(sub)
                         }
                     />
                 </FormItem>
-                <FormItem label="模特">
+                <FormItem name="md" label="模特">
                     <Selector
-                        options={mockImg.map((item, index) => ({
+                        multiple
+                        options={[{
+                            label: <div>
+                                <PicturesOutline />
+                                <div>全部</div>
+                            </div>,
+                            value: "0",
+                        }].concat(mockImg.map((item, index) => ({
                             label: <Avatar src={item} />,
-                            value: index,
-                        }))}
+                            value: `${index} + 1`,
+                        })))}
                     />
                 </FormItem>
-
-
-
             </Form>
         </Popup>
     )

@@ -20,5 +20,9 @@
   --initial-position-bottom: 24Px;
   --initial-position-right: 24Px;
   --edge-distance: 24Px;
-  --background: var(--adm-color-secondprimary);
+  --background: var(--adm-color-danger);
+}
+
+.disablePlay {
+  --background: var(--adm-color-weak);
 }
