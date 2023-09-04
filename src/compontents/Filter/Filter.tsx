@@ -35,9 +35,14 @@ const getOptions = (obj: { [s: string]: string }) =>
         value: Object.values(obj)[index],
     }));
 
+interface valType {
+    [key: string]: string[]
+}
+
 interface Props {
-    onFilter?: (result: { [key: string]: string[] }) => void;
-    defaultValues?: { [key: string]: string[] };
+    onFilter?: (result: valType) => void;
+    onChange?: (data: valType) => void;
+    defaultValues?: valType;
     models?: { id: string; src: string }[];
 }
 
@@ -45,13 +50,14 @@ const Filter: React.FC<Props & PopupProps> = ({
     onFilter,
     models = [],
     defaultValues = {},
+    onChange,
     ...props
 }) => {
     const form = Form.useForm()[0];
     const lastAllFields = useRef<string[]>(["category", "gender", "sub", "md"]);
     const [isPerson, setIsPerson] = useState(true);
     const filterLastAll = useCallback(
-        (valobj: { [s: string]: string[] | undefined }) => {
+        (valobj?: valType) => {
             const lastAll: string[] = [];
             for (const key in valobj) {
                 if (Object.prototype.hasOwnProperty.call(valobj, key)) {
@@ -85,6 +91,24 @@ const Filter: React.FC<Props & PopupProps> = ({
         [defaultValues, filterLastAll, form],
     );
 
+    const getResult = useCallback(
+        (values: { [key: string]: string[] | undefined}) => {
+            const result: {
+                [key: string]: string[]
+            } = {};
+            for (const key in values) {
+                if (Object.prototype.hasOwnProperty.call(values, key)) {
+                    const element = values[key];
+                    if (element?.length) {
+                        result[key] = element;
+                    }
+                }
+            }
+            return result;
+        },
+        [],
+    );
+
     useEffect(() => {
         init()
     }, [init])
@@ -108,8 +132,9 @@ const Filter: React.FC<Props & PopupProps> = ({
                 }
             }
             filterLastAll(values);
+            onChange?.(getResult(values));
         },
-        [filterLastAll, form]
+        [filterLastAll, form, getResult, onChange]
     );
 
     const onFieldsChange = useCallback(() => {
@@ -126,19 +151,8 @@ const Filter: React.FC<Props & PopupProps> = ({
 
     const onFinish = useCallback(() => {
         const values = form.getFieldsValue();
-        const result: {
-            [key: string]: string[]
-        } = {};
-        for (const key in values) {
-            if (Object.prototype.hasOwnProperty.call(values, key)) {
-                const element = values[key];
-                if (element?.length) {
-                    result[key] = element;
-                }
-            }
-        }
-        onFilter?.(result);
-    }, [form, onFilter]);
+        onFilter?.(getResult(values));
+    }, [form, getResult, onFilter]);
 
     return (
         <Popup {...props}>

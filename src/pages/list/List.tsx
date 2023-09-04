@@ -184,6 +184,7 @@ const List: React.FC<Props> = ({ name = "list" }) => {
         onMaskClick={() => setFilterPopupVisible(false)}
         defaultValues={fliterData}
         onFilter={onFilter}
+        onChange={data => console.log(data)}
         models={[
           {
             src: "https://www.eightfeet.cn/md1/assets/models/039-y&700&707.jpg",
