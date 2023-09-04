@@ -28,7 +28,21 @@ const List: React.FC<Props> = ({ name = "list" }) => {
   const navigator = useNavigate();
   const [popupVisible, setPopupVisible] = useState(false);
   const [filterPopupVisible, setFilterPopupVisible] = useState(false);
-  
+  const [fliterData, setFliterData] = useState<{ [key: string]: string[] }>({
+    "category": [
+      "2"
+    ],
+    "md": [
+      "0"
+    ],
+    "gender": [
+      "0"
+    ],
+    "sub": [
+      "0"
+    ]
+  });
+
   const matches768 = useMediaQuery("(min-width: 768px)");
   const matches1024 = useMediaQuery("(min-width: 1024px)");
   const mainwf = { cols: 3, gap: 10 };
@@ -98,6 +112,14 @@ const List: React.FC<Props> = ({ name = "list" }) => {
     [navigator],
   );
 
+  const onFilter = useCallback(
+    (data: { [key: string]: string[] }) => {
+      setFilterPopupVisible(false)
+      setFliterData(data)
+    },
+    [],
+  );
+
   return (
     <div className={s.root}>
       {/* 数据为空 */}
@@ -152,12 +174,23 @@ const List: React.FC<Props> = ({ name = "list" }) => {
       <FloatingBubble
         axis="xy"
         magnetic="x"
-        className={classNames(s.play, {[s.disablePlay]: !selected?.length})}
-        
+        className={classNames(s.play, { [s.disablePlay]: !selected?.length })}
+
       >
         <PlayIcon fontSize={32} onClick={() => selected?.length && onPlay()} />
       </FloatingBubble>
-      <Filter visible={filterPopupVisible} onMaskClick={() => setFilterPopupVisible(false)} />
+      <Filter
+        visible={filterPopupVisible}
+        onMaskClick={() => setFilterPopupVisible(false)}
+        defaultValues={fliterData}
+        onFilter={onFilter}
+        models={[
+          {
+            src: "https://www.eightfeet.cn/md1/assets/models/039-y&700&707.jpg",
+            id: "1"
+          }
+        ]}
+      />
     </div>
   );
 };
