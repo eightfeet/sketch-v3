@@ -91,8 +91,12 @@ const Filter: React.FC<Props & PopupProps> = ({
         [defaultValues, filterLastAll, form],
     );
 
+    useEffect(() => {
+        init()
+    }, [init])
+
     const getResult = useCallback(
-        (values: { [key: string]: string[] | undefined}) => {
+        (values: { [key: string]: string[] | undefined }) => {
             const result: {
                 [key: string]: string[]
             } = {};
@@ -109,44 +113,45 @@ const Filter: React.FC<Props & PopupProps> = ({
         [],
     );
 
-    useEffect(() => {
-        init()
-    }, [init])
+
 
     const onValuesChange = useCallback(
         (
-            valobj: { [s: string]: string[] | undefined } | ArrayLike<unknown>,
+            currectValObj: { [s: string]: string[] | undefined } | ArrayLike<unknown>,
             values: { [key: string]: any }
         ) => {
-            const key = Object.keys(valobj)[0];
-            const val = Object.values(valobj)[0] as string[];
-            // 当前内容有全选
-            if (val?.includes("0")) {
-                if (lastAllFields.current.includes(key)) {
-                    form.setFieldValue(
-                        key,
-                        val.filter((item) => item !== "0")
-                    );
-                } else {
-                    form.setFieldValue(key, ["0"]);
+            const currectKey = Object.keys(currectValObj)[0];
+            const currectVal = Object.values(currectValObj)[0] as string[];
+            console.log("vals", values);
+
+            Object.keys(values).forEach(key => {
+                const eachOne: string[] = values[key];
+                if (currectVal?.includes("0")) {
+                    // 当前结果包含0
+                    if (lastAllFields.current.includes(key)) {
+                        form.setFieldValue(
+                            currectKey, eachOne.filter(el => el !== "0"))
+                    } else {
+                        console.log(111, currectKey, ["0"]);
+                        
+                        form.setFieldValue(
+                            currectKey, ["0"])
+                    }
                 }
-            }
-            filterLastAll(values);
-            onChange?.(getResult(values));
+                console.log('eachOne', eachOne);
+            })
+            const newRes = form.getFieldsValue();
+            console.log("newRes", newRes);
+            
+            // filterLastAll(newRes);
+            // onChange?.(getResult(newRes));
         },
         [filterLastAll, form, getResult, onChange]
     );
 
     const onFieldsChange = useCallback(() => {
         const categorySelected = (form.getFieldValue("category") || []) as string[];
-        if (
-            !categorySelected.includes(category.全部) &&
-            !categorySelected.includes(category.人物)
-        ) {
-            setIsPerson(false);
-        } else {
-            setIsPerson(true);
-        }
+        setIsPerson(categorySelected.includes(category.全部) || categorySelected.includes(category.人物));
     }, [form]);
 
     const onFinish = useCallback(() => {
