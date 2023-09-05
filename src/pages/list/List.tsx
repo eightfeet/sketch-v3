@@ -130,7 +130,7 @@ const List: React.FC<Props> = ({ name = "list" }) => {
       {/* 数据展示 */}
       <div className={s.nav}>
         <NavBar
-          onBack={() => { }}
+          onBack={() => navigator("/")}
           right={
             <Space>
               <Badge content={selected?.length || null}>
