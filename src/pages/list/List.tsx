@@ -30,7 +30,7 @@ const List: React.FC<Props> = ({ name = "list" }) => {
   const [filterPopupVisible, setFilterPopupVisible] = useState(false);
   const [fliterData, setFliterData] = useState<{ [key: string]: string[] }>({
     "category": [
-      "2"
+      "0"
     ],
     "md": [
       "0"
@@ -115,7 +115,8 @@ const List: React.FC<Props> = ({ name = "list" }) => {
   const onFilter = useCallback(
     (data: { [key: string]: string[] }) => {
       setFilterPopupVisible(false)
-      setFliterData(data)
+      setFliterData(data);
+      console.log("Filter", data);
     },
     [],
   );
@@ -184,10 +185,10 @@ const List: React.FC<Props> = ({ name = "list" }) => {
         onMaskClick={() => setFilterPopupVisible(false)}
         defaultValues={fliterData}
         onFilter={onFilter}
-        onChange={data => console.log(data)}
+        onChange={data => console.log("change", data)}
         models={[
           {
-            src: "https://www.eightfeet.cn/md1/assets/models/039-y&700&707.jpg",
+            src: "111",
             id: "1"
           }
         ]}
