@@ -1,0 +1,39 @@
+.root {
+    width: 100vw;
+    height: 100vh;
+    background: #fff;
+}
+
+.head {
+    height: 200px;
+    width: 90vw;
+}
+
+.button {
+    width: 100px;
+    height: 100px;
+}
+
+.nav {
+    width: 300Px;
+}
+
+.imgs {
+    border-radius: 300Px;
+    overflow: hidden;
+    height: 300Px;
+    width: 300Px;
+    background: #000;
+}
+.swp {
+    height: 300Px;
+    width: 300Px;
+    margin: 0 auto 20Px auto;
+}
+.top {
+    text-align: center;
+}
+
+.info {
+    color: var(--adm-color-light);
+}
