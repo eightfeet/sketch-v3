@@ -45,7 +45,7 @@ const Home: React.FC<Props> = ({ name = "达文西Sketch" }) => {
       className={s.root}
     >
       <div className={s.top}>
-        <Swiper className={s.swp} autoplay loop>
+        <Swiper className={s.swp} autoplay loop >
           {[img, img3, img4, img5, img6, img7, img8].map((item, index) => (
             <Swiper.Item key={index}>
               <Image className={s.imgs} src={item} fit="cover" />
@@ -82,7 +82,7 @@ const Home: React.FC<Props> = ({ name = "达文西Sketch" }) => {
                 }
               >
                 <Button className={s.button} shape="rounded" color="primary">
-                  <ClockCircleOutline fontSize={26} />
+                  <ClockCircleOutline fontSize={20} />
                 </Button>
               </Badge>
             </SetDuration>
@@ -93,7 +93,7 @@ const Home: React.FC<Props> = ({ name = "达文西Sketch" }) => {
                 color="primary"
                 onClick={() => navigator("/list")}
               >
-                <PictureWrongOutline fontSize={26} />
+                <PictureWrongOutline fontSize={20} />
               </Button>
             </Badge>
             <Button
@@ -102,7 +102,7 @@ const Home: React.FC<Props> = ({ name = "达文西Sketch" }) => {
               color="primary"
               onClick={() => navigator("/view")}
             >
-              <PlayIcon fontSize={26} />
+              <PlayIcon fontSize={20} />
             </Button>
           </Space>
         </Space>

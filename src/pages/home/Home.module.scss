@@ -10,24 +10,28 @@
 }
 
 .button {
-    width: 58Px;
-    height: 58Px;
+    width: 48Px;
+    height: 48Px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
 }
 
 .nav {
-    width: 300Px;
+    width: 260Px;
 }
 
 .imgs {
-    border-radius: 300Px;
+    border-radius: 260Px;
     overflow: hidden;
-    height: 300Px;
-    width: 300Px;
+    height: 260Px;
+    width: 260Px;
     background: #000;
 }
 .swp {
-    height: 300Px;
-    width: 300Px;
+    height: 260Px;
+    width: 260Px;
     margin: 0 auto 20Px auto;
 }
 .top {
