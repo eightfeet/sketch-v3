@@ -30,16 +30,24 @@
     background: #000;
 }
 .swp {
+    border-radius: 260Px;
     height: 260Px;
     width: 260Px;
     margin: 0 auto 20Px auto;
+    overflow: hidden;
+    background-color: #eee;
 }
 .top {
     text-align: center;
+    padding-top: 50Px;
 }
 
 .info {
     color: var(--adm-color-light);
     padding-bottom: 20Px;
     display: inline-block;
+}
+
+.switem {
+    background-color: #ccc;
 }
