@@ -1,16 +1,16 @@
 export const pagesize = 5;
 
 export const mockImg = [
-  "https://www.eightfeet.cn/md1/assets/models/037-x&840&696.jpg",
-  "https://www.eightfeet.cn/md1/assets/models/011-y&410&716.jpg",
-  "https://www.eightfeet.cn/md1/assets/models/025-y&468&701.jpg",
-  "https://www.eightfeet.cn/md1/assets/models/177-y&832&961.jpg",
-  "https://www.eightfeet.cn/md1/assets/models/196-y&729&1096.jpg",
-  "https://www.eightfeet.cn/md1/assets/models/401-y&898&1420.jpg",
-  "https://www.eightfeet.cn/md1/assets/models/2216-y&980&1470.jpg",
-  "https://www.eightfeet.cn/md5/small/md269/10-y&734&1000.png",
-  "https://www.eightfeet.cn/md5/small/md312/9-y&3004&4243.JPG",
-  "https://www.eightfeet.cn/md5/small/md270/10-y&800&1097.png"
+  // "https://www.eightfeet.cn/md1/assets/models/037-x&840&696.jpg",
+  // "https://www.eightfeet.cn/md1/assets/models/011-y&410&716.jpg",
+  // "https://www.eightfeet.cn/md1/assets/models/025-y&468&701.jpg",
+  // "https://www.eightfeet.cn/md1/assets/models/177-y&832&961.jpg",
+  // "https://www.eightfeet.cn/md1/assets/models/196-y&729&1096.jpg",
+  // "https://www.eightfeet.cn/md1/assets/models/401-y&898&1420.jpg",
+  // "https://www.eightfeet.cn/md1/assets/models/2216-y&980&1470.jpg",
+  // "https://www.eightfeet.cn/md5/small/md269/10-y&734&1000.png",
+  // "https://www.eightfeet.cn/md5/small/md312/9-y&3004&4243.JPG",
+  // "https://www.eightfeet.cn/md5/small/md270/10-y&800&1097.png"
 ]
 
 export interface ImageItem {
