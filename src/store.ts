@@ -78,6 +78,7 @@ export interface TaskItem {
     member_id: string;
     update_at: number;
     username: string;
+    role: number[]
   };
   
   export const user = proxy<{
@@ -157,7 +158,7 @@ export interface TaskItem {
     });
 
     if (snLoginCode === 200) {
-      if (snLoginData.role.includes(1)) {
+      if (!snLoginData.role.includes(2)) {
         throw "您的序列号与当前应用不匹配"
       }
       user.serialCode = snLoginData as SerialCode

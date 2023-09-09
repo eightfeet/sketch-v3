@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from "react";
 import useDocumentTitle from "../../hooks/useDocumentTitle";
 import { useNavigate } from "react-router-dom";
-import { Button, Space, Swiper, Image, Badge, Dialog, List } from "antd-mobile";
+import { Button, Space, Swiper, Image, Badge, Dialog, List, Toast, Tag } from "antd-mobile";
 import { useSnapshot } from "valtio";
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
@@ -97,10 +97,15 @@ const Home: React.FC<Props> = ({ name = "达文西Art-sketch" }) => {
                                     {license}
                                     {
                                         <div className={s.times}>
-                                            有效期至：
-                                            <p>{dayjs(end_at).format("YYYY-MM-DD HH:mm:ss")}</p>
+                                            有效期至：<div>{dayjs(end_at).format("YYYY-MM-DD HH:mm:ss")}</div>
                                         </div>
                                     }
+                                    <div>关联应用：
+                                        <Space>
+                                            {userR.serialCode.role.includes(1) ? <Tag >模型</Tag> : null}
+                                            {userR.serialCode.role.includes(2) ? <Tag >速写</Tag> : null}
+                                        </Space>
+                                    </div><br />
                                     <ClipBoard
                                         onSuccess={Dialog.clear}
                                         message="已复制"
@@ -150,12 +155,21 @@ const Home: React.FC<Props> = ({ name = "达文西Art-sketch" }) => {
     const onPlay = useCallback(
         () => {
             if (!userR.auth) {
+                Toast.show("请先激活产品")
                 checkAuth();
                 return;
             }
-            () => navigator("/view")
+            if (selected.length <= 1) {
+                Toast.show("请先选择图片")
+                return;
+            }
+            if (duration <= 0) {
+                Toast.show("请先选择速写时间")
+                return;
+            }
+            navigator("/view")
         },
-        [checkAuth, navigator, userR.auth],
+        [checkAuth, duration, navigator, selected.length, userR.auth],
     );
 
     return (
