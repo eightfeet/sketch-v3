@@ -155,7 +155,11 @@ export interface TaskItem {
       username,
       license,
     });
+
     if (snLoginCode === 200) {
+      if (snLoginData.role.includes(1)) {
+        throw "您的序列号与当前应用不匹配"
+      }
       user.serialCode = snLoginData as SerialCode
       user.member_id = snLoginData.member_id;
       user.token = snLoginData.token;
@@ -187,11 +191,12 @@ export interface TaskItem {
     user.member_id = member_id;
     const { code, data, msg } = await cloudFunction(CloudKeys.查询序列号, {
       member_id,
-      role: [1],
+      role: [2],
     });
   
     if (code !== 200) {
       console.error("找不到激活信息", msg);
+      throw `不是当前应用序列号, ${msg}`
       return;
     }
     if (code === 200) {
