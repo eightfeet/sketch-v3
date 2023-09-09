@@ -34,7 +34,7 @@ interface Props {
     name?: string;
 }
 
-const Home: React.FC<Props> = ({ name = "达文西Sketch" }) => {
+const Home: React.FC<Props> = ({ name = "达文西Art-sketch" }) => {
     useDocumentTitle(name);
     const { selected = [], duration = 0 } = useSnapshot(runningTime);
     const [vhelp, setVhelp] = useState(false);
