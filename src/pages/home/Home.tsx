@@ -25,6 +25,8 @@ import s from "./Home.module.scss";
 import SetDuration from "~/compontents/SetDuration";
 import HelpPopup from "~/compontents/HelpPopup/HelpPopup";
 import ClipBoard from "~/compontents/ClipBoard";
+import Activation from "~/compontents/Activation";
+import useAddWeChat from "~/hooks/useAddWeChat";
 
 dayjs.extend(duration);
 
@@ -37,93 +39,124 @@ const Home: React.FC<Props> = ({ name = "达文西Sketch" }) => {
     const { selected = [], duration = 0 } = useSnapshot(runningTime);
     const [vhelp, setVhelp] = useState(false);
     const navigator = useNavigate();
-    const userR = useSnapshot(user)
+    const userR = useSnapshot(user);
+    const addWeChat = useAddWeChat();
 
     const goTasks = useCallback(
         () => {
-          Dialog.clear()
-          navigator("/tasks");
+            Dialog.clear()
+            navigator("/tasks");
         },
         [navigator],
-      )
-    
-      const goInvite = useCallback(() => {
+    )
+
+    const goInvite = useCallback(() => {
         Dialog.clear()
         navigator("/invite")
-      }, [navigator])
-    
-    
-      const showUser = useCallback(() => {
-        const { username, license, end_at } = userR.serialCode || {};
+    }, [navigator])
+
+    const checkAuth = useCallback(() => {
         Dialog.show({
-          content: (
-            <>
-              <List header="用户信息" className={s.list}>
-                {userR.serialCode ? <List.Item
-                  prefix={
-                    <Image
-                      src={"./logo192.png"}
-                      style={{ borderRadius: 20 }}
-                      fit="cover"
-                      width={40}
-                      height={40}
-                    />
-                  }
-                  description={
-                    <>
-                      {license}
-                      {
-                        <div className={s.times}>
-                          有效期至：
-                          <p>{dayjs(end_at).format("YYYY-MM-DD HH:mm:ss")}</p>
-                        </div>
-                      }
-                      <ClipBoard
-                        onSuccess={Dialog.clear}
-                        message="已复制"
-                        text={`用户名：${username}\n序列号：${license}`}
-                        fallback={<>不支持复制</>}
-                      >
-                        <Button className={s.buttoncopy} size="mini" fill="outline">复制序列号</Button>
-                      </ClipBoard>
-                    </>
-                  }
-                >
-                  {username}
-                </List.Item> : <List.Item
-                  prefix={
-                    <Image
-                      src={"./logo192.png"}
-                      style={{ borderRadius: 20 }}
-                      fit="cover"
-                      width={40}
-                      height={40}
-                    />
-                  }
-                  description={<>请先激活达文西Art-sketch</>}
-                >
-                  游客
-                </List.Item>}
-                <List.Item onClick={goInvite}>
-                  通过邀请码激活
-                </List.Item>
-                {
-                  (userR.tasks?.achieving?.length ||
-                    userR.tasks?.newAchieved?.length || userR.tasks?.oldAchieved?.length
-                    ) ?
-                  <List.Item onClick={goTasks}>
-                    <Badge content={userR.unexchangede ? userR.unexchangede : null}>
-                      通过任务激活
-                    </Badge>
-                  </List.Item> : null
-                }
-              </List>
-            </>
-          ),
-          closeOnMaskClick: true,
+            content: <Activation
+                onSucess={() => Dialog.clear()}
+                onGetSN={() => {
+                    Dialog.clear();
+                    addWeChat();
+                }}
+                onCancel={() => Dialog.clear()}
+            />,
+            actions: [],
         });
-      }, [goInvite, goTasks, userR.serialCode, userR.tasks?.achieving?.length, userR.tasks?.newAchieved?.length, userR.tasks?.oldAchieved?.length, userR.unexchangede]);
-    
+    }, [addWeChat]);
+
+
+    const showUser = useCallback(() => {
+        const { username, license, end_at } = userR.serialCode || {};
+
+        if (!userR.auth) {
+            checkAuth();
+            return;
+        }
+
+        Dialog.show({
+            content: (
+                <>
+                    <List header="用户信息" className={s.list}>
+                        {userR.serialCode ? <List.Item
+                            prefix={
+                                <Image
+                                    src={"./logo192.png"}
+                                    style={{ borderRadius: 20 }}
+                                    fit="cover"
+                                    width={40}
+                                    height={40}
+                                />
+                            }
+                            description={
+                                <>
+                                    {license}
+                                    {
+                                        <div className={s.times}>
+                                            有效期至：
+                                            <p>{dayjs(end_at).format("YYYY-MM-DD HH:mm:ss")}</p>
+                                        </div>
+                                    }
+                                    <ClipBoard
+                                        onSuccess={Dialog.clear}
+                                        message="已复制"
+                                        text={`用户名：${username}\n序列号：${license}`}
+                                        fallback={<>不支持复制</>}
+                                    >
+                                        <Button className={s.buttoncopy} size="mini" fill="outline">复制序列号</Button>
+                                    </ClipBoard>
+                                </>
+                            }
+                        >
+                            {username}
+                        </List.Item> : <List.Item
+                            prefix={
+                                <Image
+                                    src={"./logo192.png"}
+                                    style={{ borderRadius: 20 }}
+                                    fit="cover"
+                                    width={40}
+                                    height={40}
+                                />
+                            }
+                            description={<>请先激活达文西Art-sketch</>}
+                        >
+                            游客
+                        </List.Item>}
+                        <List.Item onClick={goInvite}>
+                            通过邀请码激活
+                        </List.Item>
+                        {
+                            (userR.tasks?.achieving?.length ||
+                                userR.tasks?.newAchieved?.length || userR.tasks?.oldAchieved?.length
+                            ) ?
+                                <List.Item onClick={goTasks}>
+                                    <Badge content={userR.unexchangede ? userR.unexchangede : null}>
+                                        通过任务激活
+                                    </Badge>
+                                </List.Item> : null
+                        }
+                    </List>
+                </>
+            ),
+            closeOnMaskClick: true,
+        });
+    }, [checkAuth, goInvite, goTasks, userR.auth, userR.serialCode, userR.tasks?.achieving?.length, userR.tasks?.newAchieved?.length, userR.tasks?.oldAchieved?.length, userR.unexchangede]);
+
+    const onPlay = useCallback(
+        () => {
+            if (!userR.auth) {
+                checkAuth();
+                return;
+            }
+            () => navigator("/view")
+        },
+        [checkAuth, navigator, userR.auth],
+    );
 
     return (
         <>
@@ -189,8 +222,8 @@ const Home: React.FC<Props> = ({ name = "达文西Sketch" }) => {
                             <Button
                                 className={s.button}
                                 shape="rounded"
-                                color="primary"
-                                onClick={() => navigator("/view")}
+                                color={selected.length && userR.auth && duration ? "danger" : "primary"}
+                                onClick={onPlay}
                             >
                                 <PlayIcon fontSize={20} />
                             </Button>

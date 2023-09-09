@@ -42,6 +42,7 @@ const Tasks: React.FC<Props> = ({ name = "任务中心"}) => {
     tasks, info = {},
     member_id,
   } = useSnapshot(user);
+  
   const { achieving, oldAchieved = [], newAchieved = [] } = tasks || {};
   const [keyType, setKeyType] = useState<TaskType>(TaskType.任务);
 
