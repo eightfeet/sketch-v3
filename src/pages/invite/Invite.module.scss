@@ -1,0 +1,18 @@
+.root {
+    background-color: #fff;
+    min-height: 100vh;
+    padding: 0 24px;
+}
+
+.header {
+    padding-top: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.wx {
+    img {
+        max-width: 500px;
+    }
+}

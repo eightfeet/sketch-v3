@@ -107,6 +107,8 @@ const Home: React.FC<Props> = ({ name = "达文西Sketch" }) => {
                             </Button>
                         </Space>
                     </Space>
+                    <div onClick={() => navigator("invite")}>a</div>
+                    <div onClick={() => navigator("tasks")}>b</div>
                 </div>
                 <footer style={{ paddingBottom: "50Px" }}>
                     <span onClick={() => setVhelp(true)}>

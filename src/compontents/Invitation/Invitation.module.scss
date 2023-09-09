@@ -1,0 +1,19 @@
+.title {
+    font-size: var(--adm-font-size-9);
+    text-align: center;
+}
+
+.footer {
+    padding-top: 100px;
+    --adm-color-primary: #009688;
+}
+
+.iconbar {
+    width: 100%;
+    text-align: center;
+    padding: 100px 0;
+    img {
+        width: 300px;
+    }
+}
+

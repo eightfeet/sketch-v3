@@ -12,6 +12,7 @@ const createRouterList = () => {
     const element = modules[key];
     let path = key.split("/").slice(-2)[0].toLowerCase();
     const Comp = React.lazy(element as any);
+    
     if (path === "home") {
       path = "/";
     }

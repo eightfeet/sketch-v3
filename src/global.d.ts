@@ -8,3 +8,7 @@ declare global {
     }
 }
 
+interface Window {
+    cloud: any;
+    wx: any;
+}

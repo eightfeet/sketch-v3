@@ -1,0 +1,48 @@
+.root {
+    min-height: 100vh;
+    background-color: #ddd;
+}
+
+.header {
+    padding-top: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tab {
+    --adm-color-primary: #009688;
+    background-color: #fff;
+}
+.wrap {
+    padding: 20px;
+    --adm-color-primary: #009688;
+}
+
+.wran {
+    color: var(--adm-color-warning);
+}
+
+.nodata {
+    padding-top: 300px;
+    color: var(--adm-color-weak);
+    font-size: var(--adm-font-size-5);
+    text-align: center;
+}
+
+.progress {
+    display: inline-block;
+    padding-top: 3px;
+    padding-bottom: 3px;
+    font-size: var(--adm-font-size-main);
+}
+
+.sharebox {
+    width: 70vw;
+    height: 300px;
+    margin: 0 auto;
+    padding-top: 50px;
+    img {
+        width: 100%;
+    }
+}

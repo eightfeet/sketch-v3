@@ -44,7 +44,7 @@ interface Props {
   auth?: boolean;
 }
 
-const isDev = process.env.NODE_ENV === "development";
+const isDev = import.meta.env.DEV;
 
 const Painter: React.FC<Props> = ({
   visible,
