@@ -24,9 +24,12 @@ export enum CloudKeys {
   检查并更新任务达成 = "taskStatistics",
   /** member_id, task_id, username */
   任务转换为序列号 = "taskToSN",
+  获取模特列表 = "sketch/getPosesCatalog",
+  获取模特标签 = "sketch/getPosesTags",
+  获取模特 = "sketch/getPoses",
 }
 
-let cloud: { callFunction: (arg0: { name: string; data: { key: CloudKeys; token: string }; success: (res: any) => void; fail: (err /** username、license */: any) => void; }) => void; } | undefined = undefined
+let cloud: { callFunction: (arg0: { name: string; data: { key: CloudKeys; token: string, member_id: string }; success: (res: any) => void; fail: (err /** username、license */: any) => void; }) => void; } | undefined = undefined
 
 export const init = async () => {
   if (cloud) return cloud;
@@ -68,6 +71,7 @@ export const cloudFunction = async (key: CloudKeys, data: { [key: string]: any, 
         data: {
           key,
           token: userR.token || '',
+          member_id: userR.info?.member_id || '',
           ...data,
         },
         success: (res: any) => {

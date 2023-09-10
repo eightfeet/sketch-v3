@@ -3,37 +3,19 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Avatar, Button, Form, Popup, PopupProps, Selector } from "antd-mobile";
 import { FormItem } from "antd-mobile/es/components/form/form-item";
 import { PicturesOutline } from "antd-mobile-icons";
+import { useQuery } from "@tanstack/react-query";
+import { CloudKeys, cloudFunction } from "~/core/cloud";
+import { useSnapshot } from "valtio";
+import { user } from "~/store";
+import { Logo } from "../Logo";
+import loading from "../Loading";
+import { NamePath } from "rc-field-form/lib/interface";
 
 enum category {
   全部 = "0",
   人物 = "1",
   静物 = "2",
 }
-
-enum gender {
-  全部 = "0",
-  男 = "1",
-  女 = "2",
-  组合 = "3",
-}
-
-enum sub {
-  全部 = "0",
-  动态 = "1",
-  角色 = "2",
-  头像 = "3",
-  半身 = "4",
-  手足 = "5",
-  五官 = "6",
-  解剖 = "7",
-  动漫 = "8",
-}
-
-const getOptions = (obj: { [s: string]: string }) =>
-  Object.keys(obj).map((key, index) => ({
-    label: key,
-    value: Object.values(obj)[index],
-  }));
 
 interface valType {
   [key: string]: string[];
@@ -43,12 +25,10 @@ interface Props {
   onFilter?: (result: valType) => void;
   onChange?: (data: valType) => void;
   defaultValues?: valType;
-  models?: { id: string; src: string }[];
 }
 
 const Filter: React.FC<Props & PopupProps> = ({
   onFilter,
-  models = [],
   defaultValues = {},
   onChange,
   ...props
@@ -56,12 +36,55 @@ const Filter: React.FC<Props & PopupProps> = ({
   const form = Form.useForm()[0];
   const lastValues = useRef<{ [key: string]: string[] }>({});
   const [isPerson, setIsPerson] = useState(true);
+  const userR = useSnapshot(user);
+  const [refetchKey, setRefetchKey] = useState(Date.now());
+
+  const { data: { data = []
+  } = {} } = useQuery({
+    queryKey: ["query_tags"],
+    queryFn: async () => {
+      loading.show();
+      try {
+        const res = await cloudFunction(CloudKeys.获取模特标签, {});
+        loading.hide();
+        return res;
+      } catch (error) {
+        loading.hide();
+        throw (error);
+      }
+    },
+    enabled: !!userR.auth,
+    retry: false
+  });
+
+  const { data: { data: { list = [] } = {} } = {} } = useQuery({
+    queryFn: async () => {
+      const { category, gender, sub } = form.getFieldsValue();
+      const args: { [keys: string]: string } = {};
+      if (category?.length && !category.includes("0")) args.category = category;
+      if (gender?.length && !gender.includes("0")) args.gender = gender;
+      if (sub?.length && !sub.includes("0")) args.sub = sub;
+      loading.show();
+      try {
+        const res = await cloudFunction(CloudKeys.获取模特列表, args);
+        loading.hide();
+        return res;
+      } catch (error) {
+        loading.hide();
+        throw (error);
+      }
+    },
+    queryKey: [refetchKey],
+    enabled: !!userR.auth,
+    retry: false
+  })
+
   useEffect(() => {
     if (defaultValues && props.visible) {
       form.setFieldsValue(defaultValues);
       setIsPerson(
         defaultValues.category?.includes(category.全部) ||
-          defaultValues.category?.includes(category.人物)
+        defaultValues.category?.includes(category.人物)
       );
       setTimeout(() => {
         lastValues.current = defaultValues;
@@ -110,16 +133,22 @@ const Filter: React.FC<Props & PopupProps> = ({
       const newRes = form.getFieldsValue();
       onChange?.(getResult(newRes));
       lastValues.current = newRes;
+      setRefetchKey(Date.now())
     },
     [form, getResult, onChange]
   );
 
   const onFieldsChange = useCallback(() => {
     const categorySelected = (form.getFieldValue("category") || []) as string[];
-    setIsPerson(
-      categorySelected.includes(category.全部) ||
+    if (!categorySelected?.length) {
+      setIsPerson(true);
+    } else {
+      setIsPerson(
+        categorySelected.includes(category.全部) ||
         categorySelected.includes(category.人物)
-    );
+      );
+    }
+
   }, [form]);
 
   useEffect(() => {
@@ -129,35 +158,43 @@ const Filter: React.FC<Props & PopupProps> = ({
   }, [form, isPerson, props.visible]);
 
   const onFinish = useCallback(() => {
-    const values = form.getFieldsValue();
-    onFilter?.(getResult(values));
-  }, [form, getResult, onFilter]);
+    const { category, gender, sub, poses_id } = form.getFieldsValue();
+    const args: { [keys: string]: string[] } = {};
+    if (category?.length && !category.includes("0")) args.category = category;
+    if (gender?.length && !gender.includes("0")) args.gender = gender;
+    if (sub?.length && !sub.includes("0")) args.sub = sub;
+    if (poses_id?.length && !poses_id.includes("0")) args.poses_id = poses_id;
+    onFilter?.(args);
+  }, [form, onFilter]);
 
   return (
     <Popup {...props}>
-      <div style={{ maxHeight: "60vh", overflowY: "auto" }}>
-        <Form
-          form={form}
-          onValuesChange={onValuesChange}
-          onFieldsChange={onFieldsChange}
-          onFinish={onFinish}
-        >
-          <FormItem name="category" label="类别">
-            <Selector multiple options={getOptions(category)} />
-          </FormItem>
-          {isPerson ? (
-            <FormItem name="gender" label="性别">
-              <Selector multiple options={getOptions(gender)} />
-            </FormItem>
-          ) : null}
-          {isPerson ? (
-            <FormItem name="sub" label="属性">
-              <Selector multiple options={getOptions(sub)} />
-            </FormItem>
-          ) : null}
-          {models?.length ? (
-            <FormItem name="md" label="模特">
+      {userR.auth ? <div>
+        <div>
+          <Form
+            form={form}
+            onValuesChange={onValuesChange}
+            onFieldsChange={onFieldsChange}
+            onFinish={onFinish}
+          >
+            {
+              data?.map((item: { keys: { [key: string]: string; }; name: NamePath | undefined; title: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | null | undefined; }, index: React.Key | null | undefined) => {
+                const tags = item.keys as {
+                  [key: string]: string
+                };
+                return !isPerson && (item.name === "gender" || item.name === "sub") ? null : <FormItem key={index} name={item.name} label={item.title}>
+                  <Selector multiple options={Object.keys(tags).map(key => ({
+                    label: tags[key],
+                    value: key,
+                  }))} />
+                </FormItem>
+              })
+            }
+
+
+            <FormItem name="poses_id" label="模特">
               <Selector
+                style={{ height: "30vh", overflowY: "auto" }}
                 multiple
                 options={[
                   {
@@ -170,21 +207,21 @@ const Filter: React.FC<Props & PopupProps> = ({
                     value: "0",
                   },
                 ].concat(
-                  models?.map((item, index) => ({
-                    label: <Avatar key={index} src={item.src} />,
-                    value: item.id,
+                  list?.map((item: any, index: number) => ({
+                    label: <Avatar key={index} src={item.url} fit="contain" />,
+                    value: item.poses_id,
                   })) || []
                 )}
               />
             </FormItem>
-          ) : null}
-        </Form>
-      </div>
-      <div style={{ margin: "14px"}}>
-        <Button type="submit" block color="primary" onClick={form.submit}>
-          确定
-        </Button>
-      </div>
+          </Form>
+        </div>
+        <div style={{ margin: "14px" }}>
+          <Button type="submit" block color="primary" onClick={form.submit}>
+            确定
+          </Button>
+        </div>
+      </div> : <div style={{ height: "30vh", textAlign: "center" }}><Logo width={"40Px"} /><br />暂未激活</div>}
     </Popup>
   );
 };

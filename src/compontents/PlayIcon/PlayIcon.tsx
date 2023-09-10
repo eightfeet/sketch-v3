@@ -17,6 +17,7 @@ const PlayIcon: React.FC<React.SVGProps<SVGSVGElement>> = ({ onClick, ...props }
     const onPlay = useCallback(
         () => {
             player.current?.audioEl.current?.play();
+            player.current?.audioEl.current?.pause();
         },
         [],
     );
