@@ -8,6 +8,7 @@ import duration from "dayjs/plugin/duration";
 import { runningTime, user } from "~/store";
 import {
     ClockCircleOutline,
+    KeyOutline,
     PictureWrongOutline,
     QuestionCircleOutline,
     UserOutline,
@@ -172,6 +173,20 @@ const Home: React.FC<Props> = ({ name = "达文西Art-sketch" }) => {
         [checkAuth, duration, navigator, selected.length, userR.auth],
     );
 
+    const onAct = useCallback(
+        () => {
+            Dialog.show({
+                title: <div>通过邀请码激活<div style={{ fontSize: "12px", color: "var(--adm-color-light)", fontWeight: "normal"}}>前往达文西Art小程序</div></div>,
+                content: <div style={{ textAlign: "center" }}>
+                    <img width={"80%"} src="./entrance/sinvite.png" />
+                    <br /><br />
+                    <Button block onClick={Dialog.clear}>取消</Button>
+                </div>,
+            });
+        },
+        [],
+    );
+
     return (
         <>
             <Space
@@ -246,10 +261,11 @@ const Home: React.FC<Props> = ({ name = "达文西Art-sketch" }) => {
                 </div>
 
                 <footer style={{ paddingBottom: "50Px", textAlign: "center" }}>
-                    <Space block>
-                        <span onClick={() => showUser()}><UserOutline /> 个人中心 </span>
+                    <Space block >
+                        <span onClick={showUser}><UserOutline /> {!userR.auth ? "序列号激活" : "个人中心"} </span>
+                        <span onClick={onAct}><KeyOutline /> 我有邀请码 </span>
                         <span onClick={() => setVhelp(true)}>
-                            <QuestionCircleOutline /> 使用说明
+                            <QuestionCircleOutline /> 如何使用
                         </span>
                     </Space>
 
