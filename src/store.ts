@@ -1,7 +1,7 @@
 import { proxy, subscribe } from "valtio";
 import dayjs from 'dayjs'
-import { ImageItem } from "./api";
 import { CloudKeys, cloudFunction } from "./core/cloud";
+import { ImageItem } from "./pages/list/List";
 
 
 interface RunningTime {

@@ -5,7 +5,6 @@ import { Badge, FloatingBubble, InfiniteScroll, NavBar, Space } from "antd-mobil
 import s from "./List.module.scss";
 import { useMediaQuery } from "~/hooks/useMediaQuery";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { ImageItem, mock, pagesize } from "~/api";
 import { Loading } from "~/compontents/Loading";
 import ImageCard from "~/compontents/ImageCard";
 import SelectedList from "~/compontents/SelectedList";
@@ -16,11 +15,24 @@ import PlayIcon from "~/compontents/PlayIcon/PlayIcon";
 import { FilterOutline, PicturesOutline } from "antd-mobile-icons";
 import Filter from "~/compontents/Filter";
 import classNames from 'classnames'
+import { CloudKeys, cloudFunction } from "~/core/cloud";
 // import loading from '~/compontents/Loading';
+
+export interface ImageItem {
+  url: string;
+  poses_name: string;
+  categroy: string;
+  gender: string;
+  poses_id: string;
+  sub: string[];
+  _id: string;
+}
 
 interface Props {
   name?: string;
 }
+
+const size = 10;
 
 const List: React.FC<Props> = ({ name = "list" }) => {
   useDocumentTitle(name);
@@ -29,18 +41,6 @@ const List: React.FC<Props> = ({ name = "list" }) => {
   const [popupVisible, setPopupVisible] = useState(false);
   const [filterPopupVisible, setFilterPopupVisible] = useState(false);
   const [fliterData, setFliterData] = useState<{ [key: string]: string[] }>({
-    "category": [
-      "0"
-    ],
-    "md": [
-      "0"
-    ],
-    "gender": [
-      "0"
-    ],
-    "sub": [
-      "0"
-    ]
   });
 
   const matches768 = useMediaQuery("(min-width: 768px)");
@@ -58,21 +58,21 @@ const List: React.FC<Props> = ({ name = "list" }) => {
 
   const hasMore = useRef(true);
   const queryList = useCallback(async ({ page }: { page: number }) => {
-    return mock({ page, error: false }).catch((error) => {
+    return cloudFunction(CloudKeys.获取模特, {...fliterData, page, size}).catch((error) => {
       hasMore.current = false;
       throw error;
     });
-  }, []);
+  }, [fliterData]);
 
   const { isLoading, data, fetchNextPage, isFetchedAfterMount, isError } =
     useInfiniteQuery({
-      queryKey: ["InventoryInquiry"],
+      queryKey: [fliterData],
       queryFn: ({ pageParam }) => queryList(pageParam || { page: 1 }),
       // 暂时mock
       getNextPageParam: (lastPage, pages) => {
-        const { total } = lastPage;
+        const { total } = lastPage as any;
         const currentPage = pages.length;
-        const currentSize = pages.length * pagesize;
+        const currentSize = pages.length * size;
         if (total > currentSize) {
           // 组织下一页参数
           return { page: currentPage + 1 };
@@ -84,7 +84,10 @@ const List: React.FC<Props> = ({ name = "list" }) => {
     });
 
   // 数据解构
-  const lists = data?.pages.flatMap((item) => item.data) || [];
+  const lists = data?.pages.flatMap((item) => {
+    if(item.data?.list) return item.data?.list;
+    return []
+  }) || [];
 
   const onToggleSelect = useCallback(
     (state: boolean, item: ImageItem) => {
@@ -116,15 +119,15 @@ const List: React.FC<Props> = ({ name = "list" }) => {
     (data: { [key: string]: string[] }) => {
       setFilterPopupVisible(false)
       setFliterData(data);
-      console.log("Filter", data);
     },
     [],
   );
-
+    
+    
   return (
     <div className={s.root}>
       {/* 数据为空 */}
-      {!lists?.length && isFetchedAfterMount ? "暂无数据" : null}
+      {!lists?.length && isFetchedAfterMount ? <Space justify="center" block style={{paddingTop: "30Px"}}>暂无数据</Space> : null}
       {/* 首次请求展示loading */}
       {isLoading && !isFetchedAfterMount ? <Loading /> : null}
       {/* 数据展示 */}
@@ -151,7 +154,7 @@ const List: React.FC<Props> = ({ name = "list" }) => {
           return (
             <ImageCard
               key={index}
-              src={item.src}
+              src={item?.url}
               toggleType={isSelected ? ["icon"] : ["block", "icon"]}
               selected={isSelected}
               onToggle={(state: boolean) => onToggleSelect(state, item)}
@@ -186,12 +189,6 @@ const List: React.FC<Props> = ({ name = "list" }) => {
         defaultValues={fliterData}
         onFilter={onFilter}
         onChange={data => console.log("change", data)}
-        models={[
-          {
-            src: "111",
-            id: "1"
-          }
-        ]}
       />
     </div>
   );

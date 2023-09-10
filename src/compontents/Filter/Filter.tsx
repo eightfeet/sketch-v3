@@ -84,7 +84,8 @@ const Filter: React.FC<Props & PopupProps> = ({
       form.setFieldsValue(defaultValues);
       setIsPerson(
         defaultValues.category?.includes(category.全部) ||
-        defaultValues.category?.includes(category.人物)
+        defaultValues.category?.includes(category.人物) || 
+        !defaultValues.category?.length
       );
       setTimeout(() => {
         lastValues.current = defaultValues;

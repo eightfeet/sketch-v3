@@ -78,7 +78,7 @@ const View: React.FC<Props> = ({ name = "view" }) => {
     <ImageViewer.Multi
       maxZoom={10}
       images={
-        selected?.map(Item => Item.src)
+        selected?.map(Item => Item.url)
       }
       visible
       defaultIndex={imgIndex}
