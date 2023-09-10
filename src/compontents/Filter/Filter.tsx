@@ -134,7 +134,9 @@ const Filter: React.FC<Props & PopupProps> = ({
       const newRes = form.getFieldsValue();
       onChange?.(getResult(newRes));
       lastValues.current = newRes;
-      setRefetchKey(Date.now())
+      if (currentKey !== "poses_id") {
+        setRefetchKey(Date.now())
+      }
     },
     [form, getResult, onChange]
   );
