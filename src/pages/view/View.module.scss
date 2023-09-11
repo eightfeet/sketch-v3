@@ -5,6 +5,9 @@
   :global(.adm-image-viewer-indicator) {
     opacity: 0;
   }
+  :global(.adm-image-viewer-slide) {
+    overflow: hidden;
+  }
 }
 
 .timer {

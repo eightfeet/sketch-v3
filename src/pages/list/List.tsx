@@ -1,7 +1,7 @@
 import React, { useCallback, useRef, useState } from "react";
 import "wc-waterfall";
 import useDocumentTitle from "~/hooks/useDocumentTitle";
-import { Badge, FloatingBubble, InfiniteScroll, NavBar, Space } from "antd-mobile";
+import { Badge, Dialog, FloatingBubble, InfiniteScroll, NavBar, Space, Toast } from "antd-mobile";
 import s from "./List.module.scss";
 import { useMediaQuery } from "~/hooks/useMediaQuery";
 import { useInfiniteQuery } from "@tanstack/react-query";
@@ -9,13 +9,16 @@ import { Loading } from "~/compontents/Loading";
 import ImageCard from "~/compontents/ImageCard";
 import SelectedList from "~/compontents/SelectedList";
 import { useSnapshot } from 'valtio';
-import { runningTime } from "~/store";
+import { runningTime, user } from "~/store";
 import { useNavigate } from "react-router-dom";
 import PlayIcon from "~/compontents/PlayIcon/PlayIcon";
 import { FilterOutline, PicturesOutline } from "antd-mobile-icons";
 import Filter from "~/compontents/Filter";
 import classNames from 'classnames'
 import { CloudKeys, cloudFunction } from "~/core/cloud";
+import mock from './mock.json';
+import Activation from "~/compontents/Activation";
+import useAddWeChat from "~/hooks/useAddWeChat";
 // import loading from '~/compontents/Loading';
 
 export interface ImageItem {
@@ -37,6 +40,7 @@ const size = 10;
 const List: React.FC<Props> = ({ name = "list" }) => {
   useDocumentTitle(name);
   const { selected } = useSnapshot(runningTime);
+  const { auth } = useSnapshot(user);
   const navigator = useNavigate();
   const [popupVisible, setPopupVisible] = useState(false);
   const [filterPopupVisible, setFilterPopupVisible] = useState(false);
@@ -58,8 +62,10 @@ const List: React.FC<Props> = ({ name = "list" }) => {
 
   const hasMore = useRef(true);
   const queryList = useCallback(async ({ page }: { page: number }) => {
-    return cloudFunction(CloudKeys.获取模特, {...fliterData, page, size}).catch((error) => {
+    return cloudFunction(CloudKeys.获取模特, { ...fliterData, page, size }).catch((error) => {
       hasMore.current = false;
+      console.log(33333, error);
+
       throw error;
     });
   }, [fliterData]);
@@ -70,9 +76,11 @@ const List: React.FC<Props> = ({ name = "list" }) => {
       queryFn: ({ pageParam }) => queryList(pageParam || { page: 1 }),
       // 暂时mock
       getNextPageParam: (lastPage, pages) => {
-        const { total } = lastPage as any;
+        console.log("lastPage", lastPage);
+        const total = lastPage.data?.total_count;
         const currentPage = pages.length;
         const currentSize = pages.length * size;
+
         if (total > currentSize) {
           // 组织下一页参数
           return { page: currentPage + 1 };
@@ -80,12 +88,13 @@ const List: React.FC<Props> = ({ name = "list" }) => {
         hasMore.current = false;
         return undefined;
       },
+      enabled: !!auth,
       refetchOnWindowFocus: false,
     });
 
   // 数据解构
   const lists = data?.pages.flatMap((item) => {
-    if(item.data?.list) return item.data?.list;
+    if (item.data?.list) return item.data?.list;
     return []
   }) || [];
 
@@ -110,9 +119,13 @@ const List: React.FC<Props> = ({ name = "list" }) => {
 
   const onPlay = useCallback(
     () => {
+      if (!selected?.length) {
+        Toast.show("请先选择图片");
+        return;
+      }
       navigator("/view");
     },
-    [navigator],
+    [navigator, selected?.length],
   );
 
   const onFilter = useCallback(
@@ -122,14 +135,30 @@ const List: React.FC<Props> = ({ name = "list" }) => {
     },
     [],
   );
-    
-    
+
+  const addWeChat = useAddWeChat();
+
+
+  const checkAuth = useCallback(() => {
+    Dialog.show({
+        content: <Activation
+            onSucess={() => Dialog.clear()}
+            onGetSN={() => {
+                Dialog.clear();
+                addWeChat();
+            }}
+            onCancel={() => Dialog.clear()}
+        />,
+        actions: [],
+    });
+}, [addWeChat]);
+
   return (
     <div className={s.root}>
       {/* 数据为空 */}
-      {!lists?.length && isFetchedAfterMount ? <Space justify="center" block style={{paddingTop: "30Px"}}>暂无数据</Space> : null}
+      {!lists?.length && isFetchedAfterMount ? <Space justify="center" block style={{ paddingTop: "30Px" }}>暂无数据</Space> : null}
       {/* 首次请求展示loading */}
-      {isLoading && !isFetchedAfterMount ? <Loading /> : null}
+      {isLoading && !isFetchedAfterMount && auth ? <Loading /> : null}
       {/* 数据展示 */}
       <div className={s.nav}>
         <NavBar
@@ -149,7 +178,7 @@ const List: React.FC<Props> = ({ name = "list" }) => {
       </div>
 
       <wc-waterfall {...mainwf}>
-        {lists.map((item, index) => {
+        {lists.map((item: ImageItem, index) => {
           const isSelected = selected?.some(selectItem => item._id === selectItem._id);
           return (
             <ImageCard
@@ -162,6 +191,23 @@ const List: React.FC<Props> = ({ name = "list" }) => {
           )
         })}
       </wc-waterfall>
+
+      {!auth ? <><wc-waterfall {...mainwf}>
+        {mock.map((item, index) => {
+          const isSelected = selected?.some(selectItem => item._id === selectItem._id);
+          return (
+            <ImageCard
+              key={index}
+              src={item?.url}
+              toggleType={isSelected ? ["icon"] : ["block", "icon"]}
+              selected={isSelected}
+              onToggle={(state: boolean) => onToggleSelect(state, item as any)}
+            />
+          )
+        })}
+      </wc-waterfall>
+      <p style={{textAlign: "center"}} onClick={checkAuth}>查看更多素材请先激活产品</p>
+      </> : null}
 
       {/* 下一页 */}
       {!isError && lists?.length ? (
@@ -181,7 +227,7 @@ const List: React.FC<Props> = ({ name = "list" }) => {
         className={classNames(s.play, { [s.disablePlay]: !selected?.length })}
 
       >
-        <PlayIcon fontSize={32} onClick={() => selected?.length && onPlay()} />
+        <PlayIcon fontSize={32} onClick={onPlay} />
       </FloatingBubble>
       <Filter
         visible={filterPopupVisible}

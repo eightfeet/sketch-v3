@@ -92,7 +92,7 @@ export interface TaskItem {
   }>({});
   
   try {
-    const userSession = sessionStorage.getItem("dwx_user");
+    const userSession = localStorage.getItem("dwx_user");
     if (userSession) {
       const { token, member_id, tasks, info, serialCode, auth, unexchangede} = JSON.parse(userSession);
       user.token = token;
@@ -108,7 +108,7 @@ export interface TaskItem {
   }
   
   subscribe(user, () => {
-    sessionStorage.setItem("dwx_user", JSON.stringify(user));
+    localStorage.setItem("dwx_user", JSON.stringify(user));
   })
   
   /**
@@ -177,7 +177,7 @@ export interface TaskItem {
    */
   export const updateSN = (data: SerialCode) => {
     user.serialCode = data;
-    window.sessionStorage.setItem("serialCode", JSON.stringify(data));
+    window.localStorage.setItem("serialCode", JSON.stringify(data));
     const days = dayjs(user.serialCode?.end_at).diff(dayjs(), "day");
     if (days >= 0) {
       user.auth = true;

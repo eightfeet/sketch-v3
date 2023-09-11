@@ -167,6 +167,7 @@ const Filter: React.FC<Props & PopupProps> = ({
     if (gender?.length && !gender.includes("0")) args.gender = gender;
     if (sub?.length && !sub.includes("0")) args.sub = sub;
     if (poses_id?.length && !poses_id.includes("0")) args.poses_id = poses_id;
+    
     onFilter?.(args);
   }, [form, onFilter]);
 
@@ -211,7 +212,7 @@ const Filter: React.FC<Props & PopupProps> = ({
                   },
                 ].concat(
                   list?.map((item: any, index: number) => ({
-                    label: <Avatar key={index} src={item.url} fit="contain" />,
+                    label: <Avatar key={index} src={import.meta.env.DEV? `https://www.dawenxi.art/${item.url}` : item.url} fit="contain" />,
                     value: item.poses_id,
                   })) || []
                 )}

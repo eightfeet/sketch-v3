@@ -2,6 +2,7 @@ import queryString from "query-string";
 import loadScript from "./loadScript";
 import { user } from "~/store";
 import { snapshot } from "valtio";
+import { Toast } from "antd-mobile";
 
 export enum CloudKeys {
   /** username、license */
@@ -37,7 +38,7 @@ export const init = async () => {
   await loadScript(
     "https://web-9gikcbug35bad3a8-1304825656.tcloudbaseapp.com/sdk/1.4.0/cloud.js"
   );
-  const { e=import.meta.env.VITE_APP_MINIENV, appid=import.meta.env.VITE_APP_MINIID } = queryString.parse(window.location.search);
+  const { e = import.meta.env.VITE_APP_MINIENV, appid = import.meta.env.VITE_APP_MINIID } = queryString.parse(window.location.search);
   if (!e || !appid) {
     throw new Error('云函数初始化失败，缺少参数');
   }
@@ -59,7 +60,7 @@ export const init = async () => {
 export const cloudFunction = async (key: CloudKeys, data: { [key: string]: any, }) => {
 
   cloud = await init();
-  
+
   return await new Promise<{ code: number; data: { [key: string]: any }; msg?: string, status?: number | string }>(
     (resolve, reject) => {
       if (!cloud) {
@@ -77,6 +78,20 @@ export const cloudFunction = async (key: CloudKeys, data: { [key: string]: any, 
         success: (res: any) => {
           if (import.meta.env.DEV) {
             console.log(key, data, res.result || {})
+          }
+          if (res.result?.status === 530) {
+            Toast.show("已过期请重新登录")
+            localStorage.removeItem("serialCode");
+            localStorage.removeItem("dwx_user");
+            user.token = undefined;
+            user.member_id = undefined;
+            user.tasks = undefined;
+            user.info = undefined;
+            user.serialCode = undefined;
+            user.auth = undefined;
+            user.unexchangede = undefined;
+            throw new Error("已过期请重新登录")
+            window.location.href = "./";
           }
           resolve(res.result || {});
         },

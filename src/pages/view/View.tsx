@@ -78,7 +78,7 @@ const View: React.FC<Props> = ({ name = "view" }) => {
     <ImageViewer.Multi
       maxZoom={10}
       images={
-        selected?.map(Item => Item.url)
+        selected?.map(Item => import.meta.env.DEV? `https://www.dawenxi.art/${Item.url}` : Item.url)
       }
       visible
       defaultIndex={imgIndex}

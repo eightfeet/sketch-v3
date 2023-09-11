@@ -65,7 +65,7 @@ const SelectedList: React.FC<Props & PopupProps> = ({
                 key={item._id}
                 selected
                 onToggle={() => handleToggle(index)}
-                src={item.src}
+                src={item.url}
               />
             ))}
           </wc-waterfall>

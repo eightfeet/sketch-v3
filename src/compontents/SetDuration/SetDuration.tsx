@@ -40,6 +40,7 @@ const SetDuration: React.FC<React.HTMLAttributes<HTMLSpanElement>> = ({ children
                     </Form.Item>
                 </Form>,
                 onConfirm,
+                style: {zIndex: 2001}
             });
         },
         [duration, form, handleFieldsChange, onConfirm],
