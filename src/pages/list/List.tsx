@@ -64,8 +64,6 @@ const List: React.FC<Props> = ({ name = "list" }) => {
   const queryList = useCallback(async ({ page }: { page: number }) => {
     return cloudFunction(CloudKeys.获取模特, { ...fliterData, page, size }).catch((error) => {
       hasMore.current = false;
-      console.log(33333, error);
-
       throw error;
     });
   }, [fliterData]);
@@ -83,6 +81,7 @@ const List: React.FC<Props> = ({ name = "list" }) => {
 
         if (total > currentSize) {
           // 组织下一页参数
+          hasMore.current = false;
           return { page: currentPage + 1 };
         }
         hasMore.current = false;
