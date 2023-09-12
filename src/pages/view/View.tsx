@@ -2,7 +2,7 @@ import { ImageViewer, NavBar, Space } from "antd-mobile";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import useDocumentTitle from "~/hooks/useDocumentTitle";
 import { useSnapshot } from 'valtio'
-import { runningTime, painter } from "~/store";
+import { runningTime, painter, user } from "~/store";
 import Timer from "./components/Timer";
 import ReactAudioPlayer from "react-audio-player";
 import classNames from 'classnames'
@@ -13,6 +13,7 @@ import SelectedList from "~/compontents/SelectedList";
 import SetDuration from "~/compontents/SetDuration";
 import { useNavigate } from "react-router-dom";
 import Painter from "~/compontents/Painter";
+import { onChangeParams } from "~/compontents/Painter/Painter";
 
 interface Props {
   name?: string;
@@ -26,6 +27,7 @@ const View: React.FC<Props> = ({ name = "view" }) => {
   const { selected = [] } = useSnapshot(runningTime);
 
   const painterR = useSnapshot(painter);
+  const userR = useSnapshot(user);
 
   const navigator = useNavigate();
 
@@ -70,6 +72,20 @@ const View: React.FC<Props> = ({ name = "view" }) => {
   useEffect(() => {
     document.title = `${imgIndex + 1}/${selected.length}`;
   }, [imgIndex, selected.length])
+
+  const onChangePainter = useCallback(
+    ({ bgAlph, bgColor, lineAlph, lineColor, lineWidth}: onChangeParams) => {
+      console.log(lineAlph);
+      
+      if (bgAlph) painter.bgAlph = bgAlph;
+      if (bgColor) painter.panterBgColor = bgColor;
+      if (lineAlph) painter.lineAlph = lineAlph;
+      if (lineColor) painter.lineColor = lineColor;
+      if (lineWidth) painter.lineWidth = lineWidth;
+    },
+    [],
+  )
+  
   
 
   return <div className={s.root}>
@@ -107,16 +123,16 @@ const View: React.FC<Props> = ({ name = "view" }) => {
     <Painter
       visible={painterR.showPanter}
       onClose={() => painter.showPanter = false}
-      onChange={() => "onChangePainter"}
+      onChange={onChangePainter}
       lineColor={painterR.lineColor}
       lineWidth={painterR.lineWidth || 1}
-      bgColor={painter.panterBgColor}
-      bgAlph={painter.bgAlph}
-      eraserAlph={painter.eraserAlph}
-      eraserWidth={painter.eraserWidth}
-      lineAlph={painter.lineAlph}
+      bgColor={painterR.panterBgColor}
+      bgAlph={painterR.bgAlph}
+      eraserAlph={painterR.eraserAlph}
+      eraserWidth={painterR.eraserWidth}
+      lineAlph={painterR.lineAlph}
       historyRecords={1000}
-      auth={true}
+      auth={!userR.auth}
     />
   </div>;
 };

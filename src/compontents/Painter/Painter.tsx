@@ -21,18 +21,20 @@ interface changeProps {
   size?: number;
 }
 
+export interface onChangeParams {
+  lineColor?: string;
+  lineWidth?: number;
+  eraserWidth?: number;
+  bgColor?: string;
+  bgAlph?: number;
+  eraserAlph?: number;
+  lineAlph?: number;
+}
+
 interface Props {
   visible?: boolean;
   onClose?: () => void;
-  onChange?: (data: {
-    lineColor?: string;
-    lineWidth?: number;
-    eraserWidth?: number;
-    bgColor?: string;
-    bgAlph?: number;
-    eraserAlph?: number;
-    lineAlph?: number;
-  }) => void;
+  onChange?: (data: onChangeParams) => void;
   lineColor?: string;
   lineWidth?: number;
   eraserWidth?: number;

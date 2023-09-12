@@ -31,7 +31,7 @@ subscribe(runningTime, () => {
   localStorage.setItem("sk_runningTime", JSON.stringify(runningTime));
 })
 
-interface PainterData {
+export interface PainterData {
   showPanter: boolean;
   lineColor?: string;
   lineWidth?: number;
