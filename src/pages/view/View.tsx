@@ -67,14 +67,17 @@ const View: React.FC<Props> = ({ name = "view" }) => {
     [wranTime]
   );
 
+  useEffect(() => {
+    document.title = `${imgIndex + 1}/${selected.length}`;
+  }, [imgIndex, selected.length])
+  
+
   return <div className={s.root}>
     {!painterR.showPanter ? <NavBar className={s.nav} onBack={() => navigator(-1)} left={
       <Space>
         <EditSOutline onClick={() => painter.showPanter = true} fontSize={24} />
       </Space>
-    } >
-      <span onClick={() => setPopupVisible(true)}>{imgIndex + 1}/{selected.length}</span>
-    </NavBar> : null}
+    } /> : null}
     <ImageViewer.Multi
       maxZoom={10}
       images={
