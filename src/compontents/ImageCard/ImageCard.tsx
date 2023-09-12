@@ -54,7 +54,7 @@ const ImageCard: React.FC<Props & React.HTMLAttributes<HTMLDivElement>> = ({
       <div className={s.content}>
         <Image
           className={s.imgcove}
-          src={import.meta.env.DEV? `https://www.dawenxi.art/${src}` : src}
+          src={`${import.meta.env.VITE_APP_POSESURL}${src}`}
           fit="fill"
           style={{
             background: "#eee",

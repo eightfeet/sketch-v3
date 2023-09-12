@@ -9,7 +9,7 @@
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "build:git": "vite build --mode git --base https://www.eightfeet.cn/sketch-v3",
-    "build:mini": "vite build --mode git --base ./",
+    "build:mini": "vite build --mode mini --base ./",
     "demo:publish": "gh-pages -m \"publish demo\" -d dist",
     "demo": "npm run build:git && npm run demo:publish"
   },

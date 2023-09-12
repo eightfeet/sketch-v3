@@ -212,7 +212,7 @@ const Filter: React.FC<Props & PopupProps> = ({
                   },
                 ].concat(
                   list?.map((item: any, index: number) => ({
-                    label: <Avatar key={index} src={import.meta.env.DEV? `https://www.dawenxi.art/${item.url}` : item.url} fit="contain" />,
+                    label: <Avatar key={index} src={`${import.meta.env.VITE_APP_POSESURL}${item.url}`} fit="contain" />,
                     value: item.poses_id,
                   })) || []
                 )}

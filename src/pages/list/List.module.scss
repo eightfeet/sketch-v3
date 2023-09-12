@@ -1,14 +1,8 @@
-.nav {
-  position: fixed;
-  width: 100vw;
-  left: 0;
-  top: 0;
-  z-index: 100;
-  background-color: var(--adm-color-white);;
-}
 
 .root {
-  padding: 55Px 12px 12px;
+  padding-top: 10Px;
+
+  margin: 0;
 }
 
 .subnav {
@@ -25,4 +19,21 @@
 
 .disablePlay {
   --background: var(--adm-color-weak);
+}
+
+.menu {
+  position: fixed;
+  right: 10Px;
+  top: 10Px;
+  display: flex;
+  flex-direction: column;
+
+  .btn {
+    width: 35Px;
+    height: 35Px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+  }
 }
