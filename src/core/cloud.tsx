@@ -90,7 +90,7 @@ export const cloudFunction = async (key: CloudKeys, data: { [key: string]: any, 
             user.serialCode = undefined;
             user.auth = undefined;
             user.unexchangede = undefined;
-            throw new Error("已过期请重新登录")
+            reject("已过期请重新登录");
           }
           resolve(res.result || {});
         },

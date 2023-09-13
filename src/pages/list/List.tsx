@@ -157,72 +157,7 @@ const List: React.FC<Props> = ({ name = "选择素材" }) => {
   }, [addWeChat]);
 
   return (
-    <div className={s.root}>
-      {/* 数据为空 */}
-      {!lists?.length && isFetchedAfterMount ? (
-        <Space justify="center" block style={{ paddingTop: "30Px" }}>
-          暂无数据
-        </Space>
-      ) : null}
-      {/* 首次请求展示loading */}
-      {isLoading && !isFetchedAfterMount && auth ? <Loading /> : null}
-
-      <wc-waterfall {...mainwf}>
-        {lists.map((item: ImageItem, index) => {
-          const isSelected = selected?.some(
-            (selectItem) => item._id === selectItem._id
-          );
-          return (
-            <ImageCard
-              key={index}
-              src={item?.url}
-              toggleType={isSelected ? ["icon"] : ["block", "icon"]}
-              selected={isSelected}
-              onToggle={(state: boolean) => onToggleSelect(state, item)}
-            />
-          );
-        })}
-      </wc-waterfall>
-
-      {!auth ? (
-        <>
-          <wc-waterfall {...mainwf}>
-            {mock.map((item, index) => {
-              const isSelected = selected?.some(
-                (selectItem) => item._id === selectItem._id
-              );
-              return (
-                <ImageCard
-                  key={index}
-                  src={item?.url}
-                  toggleType={isSelected ? ["icon"] : ["block", "icon"]}
-                  selected={isSelected}
-                  onToggle={(state: boolean) =>
-                    onToggleSelect(state, item as any)
-                  }
-                />
-              );
-            })}
-          </wc-waterfall>
-          <p style={{ textAlign: "center" }} onClick={checkAuth}>
-            查看更多素材请先激活产品
-          </p>
-        </>
-      ) : null}
-
-      {/* 下一页 */}
-      {!isError && lists?.length ? (
-        <InfiniteScroll
-          loadMore={fetchNextPage as any}
-          hasMore={hasMore.current}
-        />
-      ) : null}
-      <SelectedList
-        visible={popupVisible}
-        onMaskClick={() => setPopupVisible(false)}
-        onClear={onClear}
-      />
-
+    <>
       <div className={s.menu}>
         <Button shape="rounded" color="primary" className={s.btn} onClick={() => setPopupVisible(true)}>
           <Badge content={selected?.length || null}>
@@ -244,14 +179,81 @@ const List: React.FC<Props> = ({ name = "选择素材" }) => {
           </Button>
         ) : null}
       </div>
-      <Filter
-        visible={filterPopupVisible}
-        onMaskClick={() => setFilterPopupVisible(false)}
-        defaultValues={fliterData}
-        onFilter={onFilter}
-        onChange={(data) => console.log("change", data)}
-      />
-    </div>
+
+      <div className={s.root}>
+        {/* 数据为空 */}
+        {!lists?.length && isFetchedAfterMount ? (
+          <Space justify="center" block style={{ paddingTop: "30Px" }}>
+            暂无数据
+          </Space>
+        ) : null}
+        {/* 首次请求展示loading */}
+        {isLoading && !isFetchedAfterMount && auth ? <Loading /> : null}
+
+        <wc-waterfall {...mainwf}>
+          {lists.map((item: ImageItem, index) => {
+            const isSelected = selected?.some(
+              (selectItem) => item._id === selectItem._id
+            );
+            return (
+              <ImageCard
+                key={index}
+                src={item?.url}
+                toggleType={isSelected ? ["icon"] : ["block", "icon"]}
+                selected={isSelected}
+                onToggle={(state: boolean) => onToggleSelect(state, item)}
+              />
+            );
+          })}
+        </wc-waterfall>
+
+        {!auth ? (
+          <>
+            <wc-waterfall {...mainwf}>
+              {mock.map((item, index) => {
+                const isSelected = selected?.some(
+                  (selectItem) => item._id === selectItem._id
+                );
+                return (
+                  <ImageCard
+                    key={index}
+                    src={item?.url}
+                    toggleType={isSelected ? ["icon"] : ["block", "icon"]}
+                    selected={isSelected}
+                    onToggle={(state: boolean) =>
+                      onToggleSelect(state, item as any)
+                    }
+                  />
+                );
+              })}
+            </wc-waterfall>
+            <p style={{ textAlign: "center" }} onClick={checkAuth}>
+              查看更多素材请先激活产品
+            </p>
+          </>
+        ) : null}
+
+        {/* 下一页 */}
+        {!isError && lists?.length ? (
+          <InfiniteScroll
+            loadMore={fetchNextPage as any}
+            hasMore={hasMore.current}
+          />
+        ) : null}
+        <Filter
+          visible={filterPopupVisible}
+          onMaskClick={() => setFilterPopupVisible(false)}
+          defaultValues={fliterData}
+          onFilter={onFilter}
+          onChange={(data) => console.log("change", data)}
+        />
+        <SelectedList
+          visible={popupVisible}
+          onMaskClick={() => setPopupVisible(false)}
+          onClear={onClear}
+        />
+      </div>
+    </>
   );
 };
 

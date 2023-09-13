@@ -55,7 +55,7 @@ const ImageCard: React.FC<Props & React.HTMLAttributes<HTMLDivElement>> = ({
         <Image
           className={s.imgcove}
           src={`${import.meta.env.VITE_APP_POSESURL}${src}`}
-          fit="fill"
+          
           style={{
             background: "#eee",
           }}
