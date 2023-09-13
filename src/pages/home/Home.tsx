@@ -155,11 +155,11 @@ const Home: React.FC<Props> = ({ name = "达文西Art-sketch" }) => {
 
     const onPlay = useCallback(
         () => {
-            if (!userR.auth) {
-                Toast.show("请先激活产品")
-                checkAuth();
-                return;
-            }
+            // if (!userR.auth) {
+            //     Toast.show("请先激活产品")
+            //     checkAuth();
+            //     return;
+            // }
             if (selected.length <= 1) {
                 Toast.show("请先选择图片")
                 return;
@@ -170,7 +170,7 @@ const Home: React.FC<Props> = ({ name = "达文西Art-sketch" }) => {
             }
             navigator("/view")
         },
-        [checkAuth, duration, navigator, selected.length, userR.auth],
+        [duration, navigator, selected.length],
     );
 
     const onAct = useCallback(
@@ -251,7 +251,7 @@ const Home: React.FC<Props> = ({ name = "达文西Art-sketch" }) => {
                             <Button
                                 className={s.button}
                                 shape="rounded"
-                                color={selected.length && userR.auth && duration ? "danger" : "primary"}
+                                color={selected.length && duration ? "danger" : "primary"}
                                 onClick={onPlay}
                             >
                                 <PlayIcon fontSize={20} />
