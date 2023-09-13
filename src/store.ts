@@ -130,13 +130,23 @@ try {
   const userSession = localStorage.getItem("dwx_user");
   if (userSession) {
     const { token, member_id, tasks, info, serialCode, auth, unexchangede } = JSON.parse(userSession);
-    user.token = token;
-    user.member_id = member_id;
-    user.tasks = tasks;
-    user.info = info;
-    user.serialCode = serialCode;
-    user.auth = auth;
-    user.unexchangede = unexchangede;
+    if (serialCode.role.includes(2)) {
+      user.token = token;
+      user.member_id = member_id;
+      user.tasks = tasks;
+      user.info = info;
+      user.serialCode = serialCode;
+      user.auth = auth;
+      user.unexchangede = unexchangede;
+    } else {
+      user.token = undefined;
+      user.member_id = undefined;
+      user.tasks = undefined;
+      user.info = undefined;
+      user.serialCode = undefined;
+      user.auth = undefined;
+      user.unexchangede = undefined;
+    }
   }
 } catch (error) {
   console.error(error)

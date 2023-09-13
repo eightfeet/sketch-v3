@@ -28,6 +28,7 @@ import HelpPopup from "~/compontents/HelpPopup/HelpPopup";
 import ClipBoard from "~/compontents/ClipBoard";
 import Activation from "~/compontents/Activation";
 import useAddWeChat from "~/hooks/useAddWeChat";
+import { LogoBlack } from "~/compontents/LogoBlack";
 
 dayjs.extend(duration);
 
@@ -266,6 +267,9 @@ const Home: React.FC<Props> = ({ name = "达文西Art-sketch" }) => {
                         <span onClick={onAct}><KeyOutline /> 我有邀请码 </span>
                         <span onClick={() => setVhelp(true)}>
                             <QuestionCircleOutline /> 如何使用
+                        </span>
+                        <span onClick={() => window.location.href = import.meta.env.VITE_APP_MODELURL}>
+                            <LogoBlack style={{width: "10px"}} /> 模型库
                         </span>
                     </Space>
 

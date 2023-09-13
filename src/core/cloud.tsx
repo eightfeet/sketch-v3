@@ -91,7 +91,6 @@ export const cloudFunction = async (key: CloudKeys, data: { [key: string]: any, 
             user.auth = undefined;
             user.unexchangede = undefined;
             throw new Error("已过期请重新登录")
-            window.location.href = "./";
           }
           resolve(res.result || {});
         },
