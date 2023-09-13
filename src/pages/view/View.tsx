@@ -8,7 +8,7 @@ import ReactAudioPlayer from "react-audio-player";
 import classNames from 'classnames'
 import s from './View.module.scss'
 import { SlidesRef } from "antd-mobile/es/components/image-viewer/slides";
-import { EditSOutline } from "antd-mobile-icons";
+import { AppstoreOutline, EditSOutline } from "antd-mobile-icons";
 import SelectedList from "~/compontents/SelectedList";
 import SetDuration from "~/compontents/SetDuration";
 import { useNavigate } from "react-router-dom";
@@ -48,6 +48,8 @@ const View: React.FC<Props> = ({ name = "view" }) => {
 
   const handleComplete = useCallback(() => {
     const next = imgIndex < selected.length - 1 ? imgIndex + 1 : 0;
+    console.log(imageViewRef.current);
+    
     imageViewRef.current?.swipeTo(next)
     setWranTime(false);
     setImgIndex(next)
@@ -75,8 +77,6 @@ const View: React.FC<Props> = ({ name = "view" }) => {
 
   const onChangePainter = useCallback(
     ({ bgAlph, bgColor, lineAlph, lineColor, lineWidth}: onChangeParams) => {
-      console.log(lineAlph);
-      
       if (bgAlph) painter.bgAlph = bgAlph;
       if (bgColor) painter.panterBgColor = bgColor;
       if (lineAlph) painter.lineAlph = lineAlph;
@@ -86,11 +86,10 @@ const View: React.FC<Props> = ({ name = "view" }) => {
     [],
   )
   
-  
-
   return <div className={s.root}>
     {!painterR.showPanter ? <NavBar className={s.nav} onBack={() => navigator(-1)} left={
       <Space>
+        <AppstoreOutline onClick={() => setPopupVisible(true)} fontSize={24} />
         <EditSOutline onClick={() => painter.showPanter = true} fontSize={24} />
       </Space>
     } /> : null}

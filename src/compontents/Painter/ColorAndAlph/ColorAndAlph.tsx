@@ -70,7 +70,7 @@ const ColorAndAlph: React.FC<Props> = ({ alph, color, size, onChange }) => {
       )}
       {alph !== undefined && (
         <>
-          <span className={s.ml}>不透明度</span>
+          <span className={s.ml}>透明</span>
           <input
             className={s.slider}
             type="range"
