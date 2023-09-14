@@ -159,23 +159,34 @@ const List: React.FC<Props> = ({ name = "选择素材" }) => {
   return (
     <>
       <div className={s.menu}>
-        <Button shape="rounded" color="primary" className={s.btn} onClick={() => setPopupVisible(true)}>
+        <Button
+          shape="rounded"
+          color="primary"
+          className={s.btn}
+          onClick={() => setPopupVisible(true)}
+        >
           <Badge content={selected?.length || null}>
-            <PicturesOutline
-              fontSize={24}
-            />
+            <PicturesOutline fontSize={24} />
           </Badge>
         </Button>
         <br />
-        <Button shape="rounded" color="primary" className={s.btn} onClick={() => setFilterPopupVisible(true)}>
-          <FilterOutline
-            fontSize={24}
-          />
+        <Button
+          shape="rounded"
+          color="primary"
+          className={s.btn}
+          onClick={() => setFilterPopupVisible(true)}
+        >
+          <FilterOutline fontSize={24} />
         </Button>
         <br />
         {selected?.length ? (
-          <Button shape="rounded" color="danger" className={s.btn} onClick={onPlay}>
-            <PlayIcon fontSize={24}  />
+          <Button
+            shape="rounded"
+            color="danger"
+            className={s.btn}
+            onClick={onPlay}
+          >
+            <PlayIcon fontSize={24} />
           </Button>
         ) : null}
       </div>
@@ -240,17 +251,19 @@ const List: React.FC<Props> = ({ name = "选择素材" }) => {
             hasMore={hasMore.current}
           />
         ) : null}
-        <Filter
-          visible={filterPopupVisible}
-          onMaskClick={() => setFilterPopupVisible(false)}
-          defaultValues={fliterData}
-          onFilter={onFilter}
-          onChange={(data) => console.log("change", data)}
-        />
+        {/*  */}
         <SelectedList
           visible={popupVisible}
           onMaskClick={() => setPopupVisible(false)}
           onClear={onClear}
+        />
+        <Filter
+          visible={filterPopupVisible}
+          destroyOnClose
+          onMaskClick={() => setFilterPopupVisible(false)}
+          defaultValues={fliterData}
+          onFilter={onFilter}
+          onChange={(data) => console.log("change", data)}
         />
       </div>
     </>

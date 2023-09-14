@@ -8,7 +8,6 @@ import { CloudKeys, cloudFunction } from "~/core/cloud";
 import { useSnapshot } from "valtio";
 import { user } from "~/store";
 import { Logo } from "../Logo";
-import loading from "../Loading";
 import { NamePath } from "rc-field-form/lib/interface";
 
 enum category {
@@ -42,19 +41,8 @@ const Filter: React.FC<Props & PopupProps> = ({
   const { data: { data = []
   } = {} } = useQuery({
     queryKey: ["query_tags"],
-    queryFn: async () => {
-      loading.show();
-      try {
-        const res = await cloudFunction(CloudKeys.获取模特标签, {});
-        loading.hide();
-        return res;
-      } catch (error) {
-        loading.hide();
-        throw (error);
-      }
-    },
-    enabled: !!userR.auth,
-    retry: false
+    queryFn: async () => await cloudFunction(CloudKeys.获取模特标签, {}),
+    enabled: !!userR.auth
   });
 
   const { data: { data: { list = [] } = {} } = {} } = useQuery({
@@ -64,19 +52,11 @@ const Filter: React.FC<Props & PopupProps> = ({
       if (category?.length && !category.includes("0")) args.category = category;
       if (gender?.length && !gender.includes("0")) args.gender = gender;
       if (sub?.length && !sub.includes("0")) args.sub = sub;
-      loading.show();
-      try {
-        const res = await cloudFunction(CloudKeys.获取模特列表, args);
-        loading.hide();
-        return res;
-      } catch (error) {
-        loading.hide();
-        throw (error);
-      }
+      const res = await cloudFunction(CloudKeys.获取模特列表, args);
+      return res;
     },
     queryKey: [refetchKey],
-    enabled: !!userR.auth,
-    retry: false
+    enabled: !!userR.auth
   })
 
   useEffect(() => {
