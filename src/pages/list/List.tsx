@@ -11,7 +11,7 @@ import {
 } from "antd-mobile";
 import s from "./List.module.scss";
 import { useMediaQuery } from "~/hooks/useMediaQuery";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { Loading } from "~/compontents/Loading";
 import ImageCard from "~/compontents/ImageCard";
 import SelectedList from "~/compontents/SelectedList";
@@ -45,12 +45,12 @@ const size = 10;
 
 const List: React.FC<Props> = ({ name = "选择素材" }) => {
   useDocumentTitle(name);
-  const { selected } = useSnapshot(runningTime);
+  const { selected, fliterData = {} } = useSnapshot(runningTime);
   const { auth } = useSnapshot(user);
   const navigator = useNavigate();
   const [popupVisible, setPopupVisible] = useState(false);
   const [filterPopupVisible, setFilterPopupVisible] = useState(false);
-  const [fliterData, setFliterData] = useState<{ [key: string]: string[] }>({});
+  const [firstFilter, setFirstFilter] = useState<{ [key: string]: string[] }>(fliterData as any)
 
   const matches768 = useMediaQuery("(min-width: 768px)");
   const matches1024 = useMediaQuery("(min-width: 1024px)");
@@ -103,9 +103,25 @@ const List: React.FC<Props> = ({ name = "选择素材" }) => {
       refetchOnWindowFocus: false,
     });
 
+  const { data: { data: FilterData = []
+  } = {} } = useQuery({
+    queryKey: ["query_tags"],
+    queryFn: async () => await cloudFunction(CloudKeys.获取模特标签, {}),
+  });
+
+  const { data: { data: { list: filterList = [] } = {} } = {}, } = useQuery({
+    queryFn: async () => {
+      const res = await cloudFunction(CloudKeys.获取模特列表, firstFilter);
+      return res;
+    },
+    queryKey: [firstFilter, popupVisible],
+    enabled: !!auth,
+  })
+
+
   // 数据解构
   const lists =
-    data?.pages.flatMap((item) => {
+    data?.pages?.flatMap((item) => {
       if (item.data?.list) return item.data?.list;
       return [];
     }) || [];
@@ -135,7 +151,7 @@ const List: React.FC<Props> = ({ name = "选择素材" }) => {
 
   const onFilter = useCallback((data: { [key: string]: string[] }) => {
     setFilterPopupVisible(false);
-    setFliterData(data);
+    runningTime.fliterData = data;
   }, []);
 
   const addWeChat = useAddWeChat();
@@ -261,9 +277,13 @@ const List: React.FC<Props> = ({ name = "选择素材" }) => {
           visible={filterPopupVisible}
           destroyOnClose
           onMaskClick={() => setFilterPopupVisible(false)}
-          defaultValues={fliterData}
+          defaultValues={fliterData as any || {}}
           onFilter={onFilter}
-          onChange={(data) => console.log("change", data)}
+          onChange={(data, currentKey) => {
+            if (currentKey !== "poses_id") setFirstFilter(data)
+          }}
+          data={FilterData as any}
+          list={filterList}
         />
       </div>
     </>

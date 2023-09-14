@@ -1,14 +1,11 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 // import s from './Filter.module.scss';
-import { Avatar, Button, Form, Loading, Popup, PopupProps, Selector } from "antd-mobile";
+import { Avatar, Button, Form, Popup, PopupProps, Selector } from "antd-mobile";
 import { FormItem } from "antd-mobile/es/components/form/form-item";
 import { PicturesOutline } from "antd-mobile-icons";
-import { useQuery } from "@tanstack/react-query";
-import { CloudKeys, cloudFunction } from "~/core/cloud";
 import { useSnapshot } from "valtio";
 import { user } from "~/store";
 import { Logo } from "../Logo";
-import { NamePath } from "rc-field-form/lib/interface";
 import s from './Filter.module.scss'
 
 enum category {
@@ -23,49 +20,25 @@ interface valType {
 
 interface Props {
   onFilter?: (result: valType) => void;
-  onChange?: (data: valType) => void;
+  onChange?: (data: valType, currentKey: string) => void;
   defaultValues?: valType;
+  data?: { [key: string]: any}[];
+  list?: any[]
 }
 
 const Filter: React.FC<Props & PopupProps> = ({
   onFilter,
   defaultValues = {},
   onChange,
+  data,
+  list,
   ...props
 }) => {
   const form = Form.useForm()[0];
   const lastValues = useRef<{ [key: string]: string[] }>({});
   const [isPerson, setIsPerson] = useState(true);
   const userR = useSnapshot(user);
-  const [refetchKey, setRefetchKey] = useState(Date.now());
-  const [isReady, setIsReady] = useState(false);
 
-  const { data: { data = []
-  } = {} } = useQuery({
-    queryKey: ["query_tags"],
-    queryFn: async () => await cloudFunction(CloudKeys.获取模特标签, {}),
-    enabled: isReady//!!userR.auth
-  });
-
-  const { data: { data: { list = [] } = {} } = {}, isLoading } = useQuery({
-    queryFn: async () => {
-      const { category, gender, sub } = form.getFieldsValue();
-      const args: { [keys: string]: string } = {};
-      if (category?.length && !category.includes("0")) args.category = category;
-      if (gender?.length && !gender.includes("0")) args.gender = gender;
-      if (sub?.length && !sub.includes("0")) args.sub = sub;
-      const res = await cloudFunction(CloudKeys.获取模特列表, args);
-      return res;
-    },
-    queryKey: [refetchKey],
-    enabled: isReady //!!userR.auth
-  })
-
-  useEffect(() => {
-    if (props.visible) {
-      setIsReady(true);
-    }
-  }, [props.visible])
 
 
   useEffect(() => {
@@ -119,13 +92,9 @@ const Filter: React.FC<Props & PopupProps> = ({
           form.setFieldValue(currentKey, ["0"]);
         }
       }
-
       const newRes = form.getFieldsValue();
-      onChange?.(getResult(newRes));
+      onChange?.(getResult(newRes), currentKey);
       lastValues.current = newRes;
-      if (currentKey !== "poses_id") {
-        setRefetchKey(Date.now())
-      }
     },
     [form, getResult, onChange]
   );
@@ -170,7 +139,7 @@ const Filter: React.FC<Props & PopupProps> = ({
             onFinish={onFinish}
           >
             {
-              data?.map((item: { keys: { [key: string]: string; }; name: NamePath | undefined; title: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | null | undefined; }, index: React.Key | null | undefined) => {
+              data?.map((item: any, index: React.Key | null | undefined) => {
                 const tags = item.keys as {
                   [key: string]: string
                 };
@@ -183,12 +152,11 @@ const Filter: React.FC<Props & PopupProps> = ({
               })
             }
 
-
             <FormItem name="poses_id" label="模特">
               <Selector
                 style={{ height: "30vh", overflowY: "auto" }}
                 multiple
-                options={!isLoading ? ([
+                options={([
                   {
                     label: (
                       <div>
@@ -203,10 +171,7 @@ const Filter: React.FC<Props & PopupProps> = ({
                     label: <Avatar key={index} src={`${import.meta.env.VITE_APP_POSESURL}${item.url}`} fit="contain" />,
                     value: item.poses_id,
                   })) || [])
-                ) : [{
-                  label: <Loading />,
-                  value: ""
-                }]}
+                )}
               />
             </FormItem>
           </Form>
