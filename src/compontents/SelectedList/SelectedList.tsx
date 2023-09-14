@@ -6,10 +6,26 @@ import ImageCard from "../ImageCard";
 import Empty from "~/compontents/Empty/Empty";
 import { useSnapshot } from 'valtio'
 import { runningTime } from "~/store";
+import { ImageItem } from "~/pages/list/List";
 
 interface Props {
   onClear?: () => void;
   clearText?: string;
+}
+
+const shuffleArray = (array: ImageItem[]): ImageItem[] => {
+  // const newArray = [...array];
+  let currentIndex = array.length;
+
+  while (0 !== currentIndex) {
+    const randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex -= 1;
+
+    // 交换当前元素和随机元素
+    [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+  }
+
+  return array;
 }
 
 const SelectedList: React.FC<Props & PopupProps> = ({
@@ -45,6 +61,14 @@ const SelectedList: React.FC<Props & PopupProps> = ({
     [onClear],
   );
 
+  const random = useCallback(
+    () => {
+      if (!runningTime.selected) return;
+      runningTime.selected = shuffleArray(runningTime.selected)
+    },
+    [],
+  );
+
   return (
     <Popup {...popupProps} className={s.main}>
       <NavBar
@@ -52,9 +76,14 @@ const SelectedList: React.FC<Props & PopupProps> = ({
         backArrow={false}
         left={`已选择 ${10}`}
         right={
-          <Button fill="none" size="mini" onClick={clear}>
-            {clearText || "清除"}
-          </Button>
+          runningTimeR.selected?.length ? <>
+            <Button fill="none" size="mini" onClick={random}>
+              随机排序
+            </Button>
+            <Button fill="none" size="mini" onClick={clear}>
+              {clearText || "清除"}
+            </Button>
+          </> : null
         }
       ></NavBar>
       <div className={s.content}>
