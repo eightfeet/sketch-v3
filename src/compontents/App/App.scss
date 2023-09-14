@@ -3,8 +3,13 @@
     --adm-color-secondprimary: #008d6e;
 }
 
-body {
+body.adm-overflow-hidden {
     padding: 0;
     margin: 0;
     background-color: #dfdfdf;
+    overflow: auto !important;
+}
+
+html body.adm-overflow-hidden {
+    overflow: auto !important;
 }

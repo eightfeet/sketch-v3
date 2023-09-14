@@ -68,14 +68,20 @@ const List: React.FC<Props> = ({ name = "选择素材" }) => {
   const hasMore = useRef(true);
   const queryList = useCallback(
     async ({ page }: { page: number }) => {
-      return cloudFunction(CloudKeys.获取模特, {
-        ...fliterData,
-        page,
-        size,
-      }).catch((error) => {
+      try {
+        const res = await cloudFunction(CloudKeys.获取模特, {
+          ...fliterData,
+          page,
+          size,
+        })
+        setTimeout(() => {
+          document.body.classList.remove("adm-overflow-hidden");
+        }, 1000)
+        return res
+      } catch (error) {
         hasMore.current = false;
         throw error;
-      });
+      }
     },
     [fliterData]
   );
@@ -216,9 +222,25 @@ const List: React.FC<Props> = ({ name = "选择素材" }) => {
         ) : null}
         {/* 首次请求展示loading */}
         {isLoading && !isFetchedAfterMount && auth ? <Loading /> : null}
+        {/* <Space wrap>
+          {lists.map((item: ImageItem, index) => {
+            const isSelected = selected?.some(
+              (selectItem) => item._id === selectItem._id
+            );
+            return (
+              <ImageCard
+                key={index}
+                src={"https://www.dawenxi.art/poses/md259/34-y&612&1035.png"}
+                toggleType={isSelected ? ["icon"] : ["block", "icon"]}
+                selected={isSelected}
+                onToggle={(state: boolean) => onToggleSelect(state, item)}
+              />
+            );
+          })}
+        </Space> */}
 
         <wc-waterfall {...mainwf}>
-          {lists.map((item: ImageItem, index) => {
+          {auth && lists.map((item: ImageItem, index) => {
             const isSelected = selected?.some(
               (selectItem) => item._id === selectItem._id
             );
@@ -236,7 +258,7 @@ const List: React.FC<Props> = ({ name = "选择素材" }) => {
 
         {!auth ? (
           <>
-            <wc-waterfall {...mainwf}>
+            <wc-waterfall {...mainwf} className={s.wrap}>
               {mock.map((item, index) => {
                 const isSelected = selected?.some(
                   (selectItem) => item._id === selectItem._id
