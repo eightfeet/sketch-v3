@@ -1,8 +1,8 @@
 import { proxy, subscribe } from "valtio";
-import dayjs from 'dayjs'
+import dayjs from "dayjs";
 import { CloudKeys, cloudFunction } from "./core/cloud";
 import { ImageItem } from "./pages/list/List";
-
+import { Dialog } from "antd-mobile";
 
 interface RunningTime {
   selected?: ImageItem[];
@@ -11,25 +11,24 @@ interface RunningTime {
 }
 
 export const runningTime = proxy<RunningTime>({
-  duration: 300
-})
+  duration: 300,
+});
 
 try {
   const runningTimeSession = localStorage.getItem("sk_runningTime");
   if (runningTimeSession) {
-    const { selected, duration, formatTime }
-      = JSON.parse(runningTimeSession);
+    const { selected, duration, formatTime } = JSON.parse(runningTimeSession);
     runningTime.selected = selected;
     runningTime.duration = duration;
     runningTime.formatTime = formatTime;
   }
 } catch (error) {
-  console.error(error)
+  console.error(error);
 }
 
 subscribe(runningTime, () => {
   localStorage.setItem("sk_runningTime", JSON.stringify(runningTime));
-})
+});
 
 export interface PainterData {
   showPanter: boolean;
@@ -44,13 +43,21 @@ export interface PainterData {
 
 export const painter = proxy<PainterData>({
   showPanter: false,
-})
+});
 
 try {
   const painterSession = localStorage.getItem("sk_painter");
   if (painterSession) {
-    const { showPanter, lineColor, lineWidth, panterBgColor, bgAlph, eraserAlph, eraserWidth, lineAlph }
-      = JSON.parse(painterSession);
+    const {
+      showPanter,
+      lineColor,
+      lineWidth,
+      panterBgColor,
+      bgAlph,
+      eraserAlph,
+      eraserWidth,
+      lineAlph,
+    } = JSON.parse(painterSession);
     painter.showPanter = showPanter;
     painter.lineColor = lineColor;
     painter.lineWidth = lineWidth;
@@ -61,12 +68,12 @@ try {
     painter.lineAlph = lineAlph;
   }
 } catch (error) {
-  console.error(error)
+  console.error(error);
 }
 
 subscribe(painter, () => {
   localStorage.setItem("sk_painter", JSON.stringify(painter));
-})
+});
 
 export interface TaskItem {
   task_id: string;
@@ -113,7 +120,7 @@ type SerialCode = {
   member_id: string;
   update_at: number;
   username: string;
-  role: number[]
+  role: number[];
 };
 
 export const user = proxy<{
@@ -129,32 +136,39 @@ export const user = proxy<{
 try {
   const userSession = localStorage.getItem("dwx_user");
   if (userSession) {
-    const { token, member_id, tasks, info, serialCode, auth, unexchangede } = JSON.parse(userSession);
+    const { token, member_id, tasks, info, serialCode, auth, unexchangede } =
+      JSON.parse(userSession);
+
+    user.token = token;
+    user.member_id = member_id;
+    user.info = info;
     if (serialCode.role.includes(2)) {
-      user.token = token;
-      user.member_id = member_id;
       user.tasks = tasks;
-      user.info = info;
       user.serialCode = serialCode;
       user.auth = auth;
       user.unexchangede = unexchangede;
     } else {
-      user.token = undefined;
-      user.member_id = undefined;
+      if (serialCode) {
+        Dialog.alert({
+          content: `您好${user.info?.username || "用户"}，您的序列号${serialCode.license}不适用于达文西速写，请重新激活！`,
+          onConfirm() {
+            Dialog.clear();
+          },
+        });
+      }
       user.tasks = undefined;
-      user.info = undefined;
       user.serialCode = undefined;
       user.auth = undefined;
       user.unexchangede = undefined;
     }
   }
 } catch (error) {
-  console.error(error)
+  console.error(error);
 }
 
 subscribe(user, () => {
   localStorage.setItem("dwx_user", JSON.stringify(user));
-})
+});
 
 /**
  * 用户id与token登录
@@ -190,9 +204,15 @@ export const getUserInfo = async ({
 
 /**
  * 用户名与序列号登陆
- * 
+ *
  */
-export const loginBySN = async ({ username, license }: { username: string, license: string }) => {
+export const loginBySN = async ({
+  username,
+  license,
+}: {
+  username: string;
+  license: string;
+}) => {
   const {
     code: snLoginCode,
     data: snLoginData,
@@ -204,16 +224,19 @@ export const loginBySN = async ({ username, license }: { username: string, licen
 
   if (snLoginCode === 200) {
     if (!snLoginData.role.includes(2)) {
-      throw "您的序列号与当前应用不匹配"
+      throw "您的序列号与当前应用不匹配";
     }
-    user.serialCode = snLoginData as SerialCode
+    user.serialCode = snLoginData as SerialCode;
     user.member_id = snLoginData.member_id;
     user.token = snLoginData.token;
   } else {
     console.error(snLoginMsg);
     throw snLoginMsg;
   }
-  await getUserInfo({ member_id: snLoginData.member_id, token: snLoginData.token });
+  await getUserInfo({
+    member_id: snLoginData.member_id,
+    token: snLoginData.token,
+  });
 };
 
 /**
@@ -242,7 +265,7 @@ export const getSerialCode = async (member_id: string) => {
 
   if (code !== 200) {
     console.error("找不到激活信息", msg);
-    throw `不是当前应用序列号, ${msg}`
+    throw `不是当前应用序列号, ${msg}`;
     return;
   }
   if (code === 200) {
@@ -251,7 +274,6 @@ export const getSerialCode = async (member_id: string) => {
     return data;
   }
 };
-
 
 /**
  * 查询任务列表
