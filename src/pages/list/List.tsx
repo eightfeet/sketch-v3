@@ -50,7 +50,9 @@ const List: React.FC<Props> = ({ name = "选择素材" }) => {
   const navigator = useNavigate();
   const [popupVisible, setPopupVisible] = useState(false);
   const [filterPopupVisible, setFilterPopupVisible] = useState(false);
-  const [firstFilter, setFirstFilter] = useState<{ [key: string]: string[] }>(fliterData as any)
+  const [firstFilter, setFirstFilter] = useState<{ [key: string]: string[] }>(
+    fliterData as any
+  );
 
   const matches768 = useMediaQuery("(min-width: 768px)");
   const matches1024 = useMediaQuery("(min-width: 1024px)");
@@ -69,15 +71,11 @@ const List: React.FC<Props> = ({ name = "选择素材" }) => {
   const queryList = useCallback(
     async ({ page }: { page: number }) => {
       try {
-        const res = await cloudFunction(CloudKeys.获取模特, {
+        return await cloudFunction(CloudKeys.获取模特, {
           ...fliterData,
           page,
           size,
-        })
-        setTimeout(() => {
-          document.body.classList.remove("adm-overflow-hidden");
-        }, 1000)
-        return res
+        });
       } catch (error) {
         hasMore.current = false;
         throw error;
@@ -109,21 +107,19 @@ const List: React.FC<Props> = ({ name = "选择素材" }) => {
       refetchOnWindowFocus: false,
     });
 
-  const { data: { data: FilterData = []
-  } = {} } = useQuery({
+  const { data: { data: FilterData = [] } = {} } = useQuery({
     queryKey: ["query_tags"],
     queryFn: async () => await cloudFunction(CloudKeys.获取模特标签, {}),
   });
 
-  const { data: { data: { list: filterList = [] } = {} } = {}, } = useQuery({
+  const { data: { data: { list: filterList = [] } = {} } = {} } = useQuery({
     queryFn: async () => {
       const res = await cloudFunction(CloudKeys.获取模特列表, firstFilter);
       return res;
     },
     queryKey: [firstFilter, popupVisible],
     enabled: !!auth,
-  })
-
+  });
 
   // 数据解构
   const lists =
@@ -222,44 +218,23 @@ const List: React.FC<Props> = ({ name = "选择素材" }) => {
         ) : null}
         {/* 首次请求展示loading */}
         {isLoading && !isFetchedAfterMount && auth ? <Loading /> : null}
-        {/* <Space wrap>
-          {lists.map((item: ImageItem, index) => {
-            const isSelected = selected?.some(
-              (selectItem) => item._id === selectItem._id
-            );
-            return (
-              <ImageCard
-                key={index}
-                src={"https://www.dawenxi.art/poses/md259/34-y&612&1035.png"}
-                toggleType={isSelected ? ["icon"] : ["block", "icon"]}
-                selected={isSelected}
-                onToggle={(state: boolean) => onToggleSelect(state, item)}
-              />
-            );
-          })}
-        </Space> */}
-
         <wc-waterfall {...mainwf}>
-          {auth && lists.map((item: ImageItem, index) => {
-            const isSelected = selected?.some(
-              (selectItem) => item._id === selectItem._id
-            );
-            return (
-              <ImageCard
-                key={index}
-                src={item?.url}
-                toggleType={isSelected ? ["icon"] : ["block", "icon"]}
-                selected={isSelected}
-                onToggle={(state: boolean) => onToggleSelect(state, item)}
-              />
-            );
-          })}
-        </wc-waterfall>
-
-        {!auth ? (
-          <>
-            <wc-waterfall {...mainwf} className={s.wrap}>
-              {mock.map((item, index) => {
+          {auth && lists.length
+            ? lists.map((item: ImageItem, index) => {
+                const isSelected = selected?.some(
+                  (selectItem) => item._id === selectItem._id
+                );
+                return (
+                  <ImageCard
+                    key={index}
+                    src={item?.url}
+                    toggleType={isSelected ? ["icon"] : ["block", "icon"]}
+                    selected={isSelected}
+                    onToggle={(state: boolean) => onToggleSelect(state, item)}
+                  />
+                );
+              })
+            : mock.map((item, index) => {
                 const isSelected = selected?.some(
                   (selectItem) => item._id === selectItem._id
                 );
@@ -275,11 +250,11 @@ const List: React.FC<Props> = ({ name = "选择素材" }) => {
                   />
                 );
               })}
-            </wc-waterfall>
-            <p style={{ textAlign: "center" }} onClick={checkAuth}>
-              查看更多素材请先激活产品
-            </p>
-          </>
+        </wc-waterfall>
+        {!auth ? (
+          <p style={{ textAlign: "center" }} onClick={checkAuth}>
+            查看更多素材请先激活产品
+          </p>
         ) : null}
 
         {/* 下一页 */}
@@ -299,10 +274,10 @@ const List: React.FC<Props> = ({ name = "选择素材" }) => {
           visible={filterPopupVisible}
           destroyOnClose
           onMaskClick={() => setFilterPopupVisible(false)}
-          defaultValues={fliterData as any || {}}
+          defaultValues={(fliterData as any) || {}}
           onFilter={onFilter}
           onChange={(data, currentKey) => {
-            if (currentKey !== "poses_id") setFirstFilter(data)
+            if (currentKey !== "poses_id") setFirstFilter(data);
           }}
           data={FilterData as any}
           list={filterList}
