@@ -36,6 +36,7 @@ const Activation: React.FC<Props> = ({ onSucess, onGetSN, onCancel }) => {
           label="用户名"
           name="name"
           rules={[{ required: true, message: "请输入用户名" }]}
+          clickable
         >
           <Input placeholder="请输入用户名" />
         </Form.Item>
@@ -50,6 +51,7 @@ const Activation: React.FC<Props> = ({ onSucess, onGetSN, onCancel }) => {
           }
           name="license"
           rules={[{ required: true, message: "请输入产品序列号" }]}
+          clickable
         >
           <Input placeholder="请输入序列号" />
         </Form.Item>

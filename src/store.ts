@@ -2,7 +2,6 @@ import { proxy, subscribe } from "valtio";
 import dayjs from "dayjs";
 import { CloudKeys, cloudFunction } from "./core/cloud";
 import { ImageItem } from "./pages/list/List";
-import { Dialog } from "antd-mobile";
 
 interface RunningTime {
   selected?: ImageItem[];
@@ -137,34 +136,27 @@ export const user = proxy<{
 try {
   const userSession = localStorage.getItem("dwx_user");
   if (userSession) {
-    const { token, member_id, tasks, info, serialCode, auth, unexchangede } =
-      JSON.parse(userSession);
-
-    user.token = token;
-    user.member_id = member_id;
-    user.info = info;
+    const { token, member_id, tasks, info, serialCode, auth, unexchangede } = JSON.parse(userSession);
     if (serialCode.role.includes(2)) {
+      user.token = token;
+      user.member_id = member_id;
       user.tasks = tasks;
+      user.info = info;
       user.serialCode = serialCode;
       user.auth = auth;
       user.unexchangede = unexchangede;
     } else {
-      if (serialCode) {
-        Dialog.alert({
-          content: `您好${user.info?.username || "用户"}，您的序列号${serialCode.license}不适用于达文西速写，请重新激活！`,
-          onConfirm() {
-            Dialog.clear();
-          },
-        });
-      }
+      user.token = undefined;
+      user.member_id = undefined;
       user.tasks = undefined;
+      user.info = undefined;
       user.serialCode = undefined;
       user.auth = undefined;
       user.unexchangede = undefined;
     }
   }
 } catch (error) {
-  console.error(error);
+  console.error(error)
 }
 
 subscribe(user, () => {

@@ -268,7 +268,7 @@ const Home: React.FC<Props> = ({ name = "达文西Art-sketch" }) => {
                         <span onClick={() => setVhelp(true)}>
                             <QuestionCircleOutline /> 如何使用
                         </span>
-                        <span onClick={() => window.location.href = import.meta.env.VITE_APP_MODELURL}>
+                        <span onClick={() => window.location.href = `${import.meta.env.VITE_APP_MODELURL}${userR.auth ? `?member_id=${userR.member_id}&token=${userR.token}` : ''}`} >
                             <LogoBlack style={{width: "10px"}} /> 模型库
                         </span>
                     </Space>

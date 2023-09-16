@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client'
 import App from './compontents/App'
 import qs from 'query-string';
 import { getUserInfo } from './store';
+import loading from './compontents/Loading';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
@@ -12,8 +13,9 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
 const { member_id, token } = qs.parse(window.location.search);
 
 if (member_id && token) {
+  loading.show()
   getUserInfo({
     member_id: member_id as string,
     token: token as string
-  })
+  }).then(() => loading.hide()).catch(() => loading.hide())
 }
