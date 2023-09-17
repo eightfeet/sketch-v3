@@ -25,6 +25,7 @@ import { CloudKeys, cloudFunction } from "~/core/cloud";
 import mock from "./mock.json";
 import Activation from "~/compontents/Activation";
 import useAddWeChat from "~/hooks/useAddWeChat";
+import { LogoBlack } from "~/compontents/LogoBlack";
 // import loading from '~/compontents/Loading';
 
 export interface ImageItem {
@@ -110,6 +111,7 @@ const List: React.FC<Props> = ({ name = "选择素材" }) => {
   const { data: { data: FilterData = [] } = {} } = useQuery({
     queryKey: ["query_tags"],
     queryFn: async () => await cloudFunction(CloudKeys.获取模特标签, {}),
+    enabled: !!auth,
   });
 
   const { data: { data: { list: filterList = [] } = {} } = {} } = useQuery({
@@ -181,6 +183,15 @@ const List: React.FC<Props> = ({ name = "选择素材" }) => {
           shape="rounded"
           color="primary"
           className={s.btn}
+          onClick={() => navigator("/")}
+        >
+          <LogoBlack width={22} fontSize={24} />
+        </Button>
+        <br />
+        <Button
+          shape="rounded"
+          color="primary"
+          className={s.btn}
           onClick={() => setPopupVisible(true)}
         >
           <Badge content={selected?.length || null}>
@@ -221,35 +232,35 @@ const List: React.FC<Props> = ({ name = "选择素材" }) => {
         <wc-waterfall {...mainwf}>
           {auth && lists.length
             ? lists.map((item: ImageItem, index) => {
-                const isSelected = selected?.some(
-                  (selectItem) => item._id === selectItem._id
-                );
-                return (
-                  <ImageCard
-                    key={index}
-                    src={item?.url}
-                    toggleType={isSelected ? ["icon"] : ["block", "icon"]}
-                    selected={isSelected}
-                    onToggle={(state: boolean) => onToggleSelect(state, item)}
-                  />
-                );
-              })
+              const isSelected = selected?.some(
+                (selectItem) => item._id === selectItem._id
+              );
+              return (
+                <ImageCard
+                  key={index}
+                  src={item?.url}
+                  toggleType={isSelected ? ["icon"] : ["block", "icon"]}
+                  selected={isSelected}
+                  onToggle={(state: boolean) => onToggleSelect(state, item)}
+                />
+              );
+            })
             : mock.map((item, index) => {
-                const isSelected = selected?.some(
-                  (selectItem) => item._id === selectItem._id
-                );
-                return (
-                  <ImageCard
-                    key={index}
-                    src={item?.url}
-                    toggleType={isSelected ? ["icon"] : ["block", "icon"]}
-                    selected={isSelected}
-                    onToggle={(state: boolean) =>
-                      onToggleSelect(state, item as any)
-                    }
-                  />
-                );
-              })}
+              const isSelected = selected?.some(
+                (selectItem) => item._id === selectItem._id
+              );
+              return (
+                <ImageCard
+                  key={index}
+                  src={item?.url}
+                  toggleType={isSelected ? ["icon"] : ["block", "icon"]}
+                  selected={isSelected}
+                  onToggle={(state: boolean) =>
+                    onToggleSelect(state, item as any)
+                  }
+                />
+              );
+            })}
         </wc-waterfall>
         {!auth ? (
           <p style={{ textAlign: "center" }} onClick={checkAuth}>

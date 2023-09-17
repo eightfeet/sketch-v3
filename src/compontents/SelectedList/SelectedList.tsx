@@ -81,7 +81,7 @@ const SelectedList: React.FC<Props & PopupProps> = ({
               随机排序
             </Button>
             <Button fill="none" size="mini" onClick={clear}>
-              {clearText || "清除"}
+              {clearText || "清空"}
             </Button>
           </> : null
         }
@@ -91,7 +91,7 @@ const SelectedList: React.FC<Props & PopupProps> = ({
           <wc-waterfall {...displaywf}>
             {runningTimeR.selected?.map((item, index) => (
               <ImageCard
-                key={item._id}
+                key={index}
                 selected
                 onToggle={() => handleToggle(index)}
                 src={item.url}

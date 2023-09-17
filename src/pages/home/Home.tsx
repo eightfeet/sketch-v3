@@ -1,15 +1,18 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import useDocumentTitle from "../../hooks/useDocumentTitle";
 import { useNavigate } from "react-router-dom";
-import { Button, Space, Swiper, Image, Badge, Dialog, List, Toast, Tag } from "antd-mobile";
+import { Button, Space, Swiper, Image, Badge, Dialog, List, Toast, Tag, Popover, ImageUploader, ImageUploadItem, Form } from "antd-mobile";
 import { useSnapshot } from "valtio";
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
 import { runningTime, user } from "~/store";
 import {
+    AppstoreOutline,
     ClockCircleOutline,
+    DeleteOutline,
     KeyOutline,
     PictureWrongOutline,
+    PicturesOutline,
     QuestionCircleOutline,
     UserOutline,
 } from "antd-mobile-icons";
@@ -29,6 +32,8 @@ import ClipBoard from "~/compontents/ClipBoard";
 import Activation from "~/compontents/Activation";
 import useAddWeChat from "~/hooks/useAddWeChat";
 import { LogoBlack } from "~/compontents/LogoBlack";
+import { Action } from "antd-mobile/es/components/popover";
+import { ImageItem } from "../list/List";
 
 dayjs.extend(duration);
 
@@ -177,7 +182,7 @@ const Home: React.FC<Props> = ({ name = "达文西Art-sketch" }) => {
     const onAct = useCallback(
         () => {
             Dialog.show({
-                title: <div>通过邀请码激活<div style={{ fontSize: "12px", color: "var(--adm-color-light)", fontWeight: "normal"}}>前往达文西Art小程序</div></div>,
+                title: <div>通过邀请码激活<div style={{ fontSize: "12px", color: "var(--adm-color-light)", fontWeight: "normal" }}>前往达文西Art小程序</div></div>,
                 content: <div style={{ textAlign: "center" }}>
                     <img width={"80%"} src="./entrance/sinvite.png" />
                     <br /><br />
@@ -187,6 +192,93 @@ const Home: React.FC<Props> = ({ name = "达文西Art-sketch" }) => {
         },
         [],
     );
+
+    // const [fileList, setFileList] = useState<ImageUploadItem[]>([])
+
+    const fileList = useRef<ImageUploadItem[]>([]);
+
+
+    const handleLocalImg = useCallback(
+        async (file: File) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            const res: ImageItem = await new Promise((resolve) => {
+                reader.onload = (e: any) => {
+                    resolve({
+                        url: e.target.result,
+                        poses_id: `${Date.now() * Math.random()}`,
+                        poses_name: `${Date.now()}`,
+                        categroy: "",
+                        sub: [],
+                        gender: "1",
+                        _id: "album"
+                    })
+                }
+            });
+            return res
+        },
+        [],
+    )
+
+    const form = Form.useForm()[0];
+    const memoizedCallback = useCallback(
+        () => {
+            try {
+                const newData: any[] = form.getFieldValue("localselected");
+                runningTime.selected = [
+                    ...runningTime.selected || [] as any,
+                    ...newData || []];
+                form.setFieldValue("localselected", [])
+            } catch (error) {
+                console.error(error)
+            }
+            Dialog.clear();
+        },
+        [form],
+    );
+
+
+    const getGallery = useCallback(
+        () => {
+            Dialog.show({
+                title: "从本地相册中选择",
+                content: <>
+                    <Form form={form}>
+                        <Form.Item name="localselected" style={{ padding: 0, margin: 0 }} >
+                            <ImageUploader
+                                style={{ '--cell-size': '61px' }}
+                                value={fileList.current}
+                                upload={handleLocalImg}
+                                multiple
+                            />
+                        </Form.Item>
+                    </Form>
+                    <br />
+                    <Button block color="primary" onClick={memoizedCallback}>确定</Button>
+                </>
+            })
+        },
+        [form, handleLocalImg, memoizedCallback],
+    )
+
+
+    const selectPicture = useCallback(
+        (node: Action) => {
+            // 相册
+            if (node.key === "gallery") {
+                navigator("/list")
+            }
+            if (node.key === "album") {
+                getGallery();
+            }
+            if (node.key === "clear") {
+                runningTime.selected = []
+            }
+        },
+        [getGallery, navigator],
+    )
+
+
 
     return (
         <>
@@ -240,14 +332,31 @@ const Home: React.FC<Props> = ({ name = "达文西Art-sketch" }) => {
                                 </Badge>
                             </SetDuration>
                             <Badge content={selected.length || null}>
-                                <Button
+                                <Popover.Menu
+                                    actions={[
+                                        { key: 'gallery', icon: <AppstoreOutline />, text: '图库' },
+                                        { key: 'album', icon: <PicturesOutline />, text: '相册' },
+                                        { key: 'clear', icon: <DeleteOutline />, text: '清空' }
+                                    ]}
+                                    placement='bottom-start'
+                                    onAction={selectPicture}
+                                    trigger='click'
+                                >
+                                    <Button
+                                        className={s.button}
+                                        shape="rounded"
+                                        color="primary">
+                                        <PictureWrongOutline fontSize={20} />
+                                    </Button>
+                                </Popover.Menu>
+                                {/* <Button
                                     className={s.button}
                                     shape="rounded"
                                     color="primary"
                                     onClick={() => navigator("/list")}
                                 >
                                     <PictureWrongOutline fontSize={20} />
-                                </Button>
+                                </Button> */}
                             </Badge>
                             <Button
                                 className={s.button}
@@ -269,7 +378,7 @@ const Home: React.FC<Props> = ({ name = "达文西Art-sketch" }) => {
                             <QuestionCircleOutline /> 如何使用
                         </span>
                         <span onClick={() => window.location.href = `${import.meta.env.VITE_APP_MODELURL}${userR.auth ? `?member_id=${userR.member_id}&token=${userR.token}` : ''}`} >
-                            <LogoBlack style={{width: "10px"}} /> 模型库
+                            <LogoBlack style={{ width: "10px" }} /> 模型库
                         </span>
                     </Space>
 

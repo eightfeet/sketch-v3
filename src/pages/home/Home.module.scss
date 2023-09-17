@@ -51,3 +51,11 @@
 .switem {
     background-color: #ccc;
 }
+
+.imgupload {
+    :global(.adm-image-uploader-space) {
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+    }
+}

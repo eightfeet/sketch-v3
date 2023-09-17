@@ -14,6 +14,7 @@ import SetDuration from "~/compontents/SetDuration";
 import { useNavigate } from "react-router-dom";
 import Painter from "~/compontents/Painter";
 import { onChangeParams } from "~/compontents/Painter/Painter";
+import { LogoBlack } from "~/compontents/LogoBlack";
 
 interface Props {
   name?: string;
@@ -33,7 +34,7 @@ const View: React.FC<Props> = ({ name = "view" }) => {
 
   useEffect(() => {
     if (!selected.length) {
-      navigator("/list")
+      navigator("/")
     }
   }, [navigator, selected])
 
@@ -88,7 +89,8 @@ const View: React.FC<Props> = ({ name = "view" }) => {
   
   return <div className={s.root}>
     {!painterR.showPanter ? <NavBar className={s.nav} onBack={() => navigator(-1)} left={
-      <Space>
+      <Space justify="center" align="center">
+        <LogoBlack width={20} onClick={() => navigator("/")} fontSize={24} />
         <AppstoreOutline onClick={() => setPopupVisible(true)} fontSize={24} />
         <EditSOutline onClick={() => painter.showPanter = true} fontSize={24} />
       </Space>
@@ -96,7 +98,7 @@ const View: React.FC<Props> = ({ name = "view" }) => {
     <ImageViewer.Multi
       maxZoom={10}
       images={
-        selected?.map(item => `${import.meta.env.VITE_APP_POSESURL}${item.url}`)
+        selected?.map(item => `${item.url.indexOf("data:image") === -1 ? import.meta.env.VITE_APP_POSESURL : ''}${item.url}`)
       }
       visible
       defaultIndex={imgIndex}
