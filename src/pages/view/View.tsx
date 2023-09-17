@@ -133,7 +133,7 @@ const View: React.FC<Props> = ({ name = "view" }) => {
       eraserWidth={painterR.eraserWidth}
       lineAlph={painterR.lineAlph}
       historyRecords={1000}
-      auth={!userR.auth}
+      auth={userR.auth}
     />
   </div>;
 };
