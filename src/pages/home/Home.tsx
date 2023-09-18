@@ -166,7 +166,7 @@ const Home: React.FC<Props> = ({ name = "达文西Art-sketch" }) => {
             //     checkAuth();
             //     return;
             // }
-            if (selected.length <= 1) {
+            if (selected.length < 1) {
                 Toast.show("请先选择图片")
                 return;
             }

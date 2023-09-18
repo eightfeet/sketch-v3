@@ -26,6 +26,8 @@ import mock from "./mock.json";
 import Activation from "~/compontents/Activation";
 import useAddWeChat from "~/hooks/useAddWeChat";
 import { LogoBlack } from "~/compontents/LogoBlack";
+import { IconRandom } from "~/compontents/IconRandom";
+import { IconSort } from "~/compontents/IconSort";
 // import loading from '~/compontents/Loading';
 
 export interface ImageItem {
@@ -155,7 +157,7 @@ const List: React.FC<Props> = ({ name = "选择素材" }) => {
 
   const onFilter = useCallback((data: { [key: string]: string[] }) => {
     setFilterPopupVisible(false);
-    runningTime.fliterData = data;
+    runningTime.fliterData = { ...runningTime.fliterData, ...data };
   }, []);
 
   const addWeChat = useAddWeChat();
@@ -175,6 +177,22 @@ const List: React.FC<Props> = ({ name = "选择素材" }) => {
       actions: [],
     });
   }, [addWeChat]);
+
+  const onRandom = useCallback(
+    () => {
+      if (fliterData) {
+        if (fliterData.order_by === "key") {
+          runningTime.fliterData = { ...runningTime.fliterData, order_by: "poses_id" }
+        } else {
+          runningTime.fliterData = { ...runningTime.fliterData, order_by: "key" }
+
+        }
+      } else {
+        runningTime.fliterData = { order_by: "poses_id" }
+      }
+    },
+    [fliterData],
+  );
 
   return (
     <>
@@ -207,6 +225,18 @@ const List: React.FC<Props> = ({ name = "选择素材" }) => {
         >
           <FilterOutline fontSize={24} />
         </Button>
+        {auth && <>
+          <br />
+          <Button
+            shape="rounded"
+            color="primary"
+            className={s.btn}
+            onClick={onRandom}
+          >
+            {fliterData.order_by === "key" ? <IconRandom width={22} /> :
+              <IconSort width={22} />}
+          </Button>
+        </>}
         <br />
         {selected?.length ? (
           <Button

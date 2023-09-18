@@ -3,6 +3,7 @@ import React, { useCallback } from "react";
 import { useMediaQuery } from "~/hooks/useMediaQuery";
 import s from "./SelectedList.module.scss";
 import ImageCard from "../ImageCard";
+import "wc-waterfall";
 import Empty from "~/compontents/Empty/Empty";
 import { useSnapshot } from 'valtio'
 import { runningTime } from "~/store";
@@ -70,7 +71,7 @@ const SelectedList: React.FC<Props & PopupProps> = ({
   );
 
   return (
-    <Popup {...popupProps} className={s.main}>
+    <Popup {...popupProps} className={s.main} destroyOnClose>
       <NavBar
         className={s.nav}
         backArrow={false}
@@ -88,7 +89,7 @@ const SelectedList: React.FC<Props & PopupProps> = ({
       ></NavBar>
       <div className={s.content}>
         <div className={s.pupup}>
-          <wc-waterfall {...displaywf}>
+          <wc-waterfall key={popupProps.visible} {...displaywf}>
             {runningTimeR.selected?.map((item, index) => (
               <ImageCard
                 key={index}

@@ -1,12 +1,14 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 // import s from './Filter.module.scss';
-import { Avatar, Button, Form, Popup, PopupProps, Selector } from "antd-mobile";
+import { Avatar, Button, Dialog, Form, Popup, PopupProps, Selector } from "antd-mobile";
 import { FormItem } from "antd-mobile/es/components/form/form-item";
 import { PicturesOutline } from "antd-mobile-icons";
 import { useSnapshot } from "valtio";
 import { user } from "~/store";
 import { Logo } from "../Logo";
 import s from './Filter.module.scss'
+import Activation from "../Activation";
+import useAddWeChat from "~/hooks/useAddWeChat";
 
 enum category {
   全部 = "0",
@@ -128,6 +130,23 @@ const Filter: React.FC<Props & PopupProps> = ({
     onFilter?.(args);
   }, [form, onFilter]);
 
+
+  const addWeChat = useAddWeChat();
+
+  const checkAuth = useCallback(() => {
+    Dialog.show({
+        content: <Activation
+            onSucess={() => Dialog.clear()}
+            onGetSN={() => {
+                Dialog.clear();
+                addWeChat();
+            }}
+            onCancel={() => Dialog.clear()}
+        />,
+        actions: [],
+    });
+}, [addWeChat]);
+
   return (
     <Popup className={s.root} {...props}>
       {userR.auth ? <div>
@@ -181,7 +200,7 @@ const Filter: React.FC<Props & PopupProps> = ({
             确定
           </Button>
         </div>
-      </div> : <div style={{ height: "30vh", textAlign: "center" }}><Logo width={"40Px"} /><br />暂未激活</div>}
+      </div> : <div style={{ height: "30vh", textAlign: "center" }} onClick={checkAuth}><Logo width={"40Px"} /><br />暂未激活</div>}
     </Popup>
   );
 };

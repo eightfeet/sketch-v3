@@ -7,7 +7,7 @@ interface RunningTime {
   selected?: ImageItem[];
   duration: number;
   formatTime?: string;
-  fliterData?: { [key: string]: string[] }
+  fliterData?: { [key: string]: string[] | string }
 }
 
 export const runningTime = proxy<RunningTime>({
