@@ -232,6 +232,7 @@ const List: React.FC<Props> = ({ name = "选择素材" }) => {
             color="primary"
             className={s.btn}
             onClick={onRandom}
+            style={{overflow: "hidden"}}
           >
             {fliterData.order_by === "key" ? <IconRandom width={22} /> :
               <IconSort width={22} />}
