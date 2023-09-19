@@ -54,7 +54,7 @@ const ImageCard: React.FC<Props & React.HTMLAttributes<HTMLDivElement>> = ({
       <div className={s.content}>
         <Image
           className={s.imgcove}
-          src={`${src?.indexOf("data:image") === -1 ? import.meta.env.VITE_APP_POSESURL : ''}${src}`}
+          src={`${src?.indexOf("data:image") === -1 ? `${import.meta.env.VITE_APP_POSESURL}thumbnail/` : ''}${src}`}
           
           style={{
             background: "#eee",
