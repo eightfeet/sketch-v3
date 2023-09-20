@@ -13,6 +13,14 @@
   }
 }
 
+.gray {
+  :global(.adm-image-viewer-image-wrapper) {
+    img {
+      filter: grayscale(100%)
+    }
+  }
+}
+
 .timer {
   position: absolute;
   z-index: 2000;

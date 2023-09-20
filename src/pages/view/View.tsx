@@ -15,6 +15,7 @@ import { useNavigate } from "react-router-dom";
 import Painter from "~/compontents/Painter";
 import { onChangeParams } from "~/compontents/Painter/Painter";
 import { LogoBlack } from "~/compontents/LogoBlack";
+import { IconBlack } from "~/compontents/IconBlack";
 
 interface Props {
   name?: string;
@@ -50,7 +51,7 @@ const View: React.FC<Props> = ({ name = "view" }) => {
   const handleComplete = useCallback(() => {
     const next = imgIndex < selected.length - 1 ? imgIndex + 1 : 0;
     console.log(imageViewRef.current);
-    
+
     imageViewRef.current?.swipeTo(next)
     setWranTime(false);
     setImgIndex(next)
@@ -77,7 +78,7 @@ const View: React.FC<Props> = ({ name = "view" }) => {
   }, [imgIndex, selected.length])
 
   const onChangePainter = useCallback(
-    ({ bgAlph, bgColor, lineAlph, lineColor, lineWidth}: onChangeParams) => {
+    ({ bgAlph, bgColor, lineAlph, lineColor, lineWidth }: onChangeParams) => {
       if (bgAlph) painter.bgAlph = bgAlph;
       if (bgColor) painter.panterBgColor = bgColor;
       if (lineAlph) painter.lineAlph = lineAlph;
@@ -86,12 +87,23 @@ const View: React.FC<Props> = ({ name = "view" }) => {
     },
     [],
   )
-  
-  return <div className={s.root}>
+
+  const [isBlack, setIsBlack] = useState(false)
+
+  return <div className={classNames(s.root, {
+    [s.gray]: isBlack
+  })}>
     {!painterR.showPanter ? <NavBar className={s.nav} onBack={() => navigator(-1)} left={
       <Space justify="center" align="center">
         <LogoBlack width={20} onClick={() => navigator("/")} fontSize={24} />
         <AppstoreOutline onClick={() => setPopupVisible(true)} fontSize={24} />
+        <IconBlack
+          width={28}
+          height={28}
+          onClick={() => setIsBlack(!isBlack)}
+          fontSize={24}
+          style={{ borderRadius: 28, overflow: "hidden", background: isBlack ? "#000" : "inherit" }}
+        />
         <EditSOutline onClick={() => painter.showPanter = true} fontSize={24} />
       </Space>
     } /> : null}
@@ -106,7 +118,7 @@ const View: React.FC<Props> = ({ name = "view" }) => {
       ref={imageViewRef}
     />
     <SetDuration>
-      <div className={classNames(s.timer, { [s.timewran]: wranTime })} style={{ opacity: !painterR.showPanter ? 1 : 0}}>
+      <div className={classNames(s.timer, { [s.timewran]: wranTime })} style={{ opacity: !painterR.showPanter ? 1 : 0 }}>
         <Timer
           key={imgIndex}
           onComplete={handleComplete}
