@@ -11,4 +11,5 @@ declare global {
 interface Window {
     cloud: any;
     wx: any;
+    VConsole: any
 }
