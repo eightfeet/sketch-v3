@@ -47,6 +47,7 @@ interface Props {
 }
 
 const isDev = import.meta.env.DEV;
+const saveScale = 2;
 
 const Painter: React.FC<Props> = ({
   visible,
@@ -282,6 +283,7 @@ const Painter: React.FC<Props> = ({
     
     setShowSave(true);
     const ctx = saveCanvasRef.current?.getContext("2d");
+    
     if (!ctx) return;
     ctx.fillStyle = bgColor;
     ctx.fillRect(
@@ -296,6 +298,7 @@ const Painter: React.FC<Props> = ({
     if (logo192.current && !auth) {
       ctx.drawImage(logo192.current, 10, 10);
     }
+    ctx.scale(saveScale,saveScale);
     ctx.drawImage(lastImg, 0, 0);
     setSaveImg(saveCanvasRef.current?.toDataURL());
   }, [auth, bgColor, lastImg]);
@@ -487,8 +490,9 @@ const Painter: React.FC<Props> = ({
       />
       {
         <canvas
-          width={window.innerWidth}
-          height={window.innerHeight}
+          key={lastImg?.src}
+          width={window.innerWidth*saveScale}
+          height={window.innerHeight*saveScale}
           ref={saveCanvasRef}
           className={s.savecvs}
         ></canvas>
