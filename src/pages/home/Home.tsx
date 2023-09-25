@@ -31,9 +31,9 @@ import HelpPopup from "~/compontents/HelpPopup/HelpPopup";
 import ClipBoard from "~/compontents/ClipBoard";
 import Activation from "~/compontents/Activation";
 import useAddWeChat from "~/hooks/useAddWeChat";
-import { LogoBlack } from "~/compontents/LogoBlack";
 import { Action } from "antd-mobile/es/components/popover";
 import { ImageItem } from "../list/List";
+import { IconMD } from "~/compontents/IconMD";
 
 dayjs.extend(duration);
 
@@ -278,6 +278,21 @@ const Home: React.FC<Props> = ({ name = "达文西Art-sketch" }) => {
         [getGallery, navigator],
     )
 
+    const goToMD = useCallback(
+        () => {
+          Dialog.confirm({
+            title: <IconMD width={60} />,
+            content: <Space block align="center" direction="vertical" style={{ width: "100%"}}>
+              <div>即将前往模型工具 <b>达文西Art-Model</b></div>
+            </Space>,
+            onConfirm() {
+              window.location.href = `${import.meta.env.VITE_APP_MODELURL}${userR.auth ? `?member_id=${userR.member_id}&token=${userR.token}` : ''}`
+            },
+          });
+        },
+        [userR.auth, userR.member_id, userR.token],
+      );
+
 
 
     return (
@@ -377,8 +392,8 @@ const Home: React.FC<Props> = ({ name = "达文西Art-sketch" }) => {
                         <span onClick={() => setVhelp(true)}>
                             <QuestionCircleOutline /> 如何使用
                         </span>
-                        <span onClick={() => window.location.href = `${import.meta.env.VITE_APP_MODELURL}${userR.auth ? `?member_id=${userR.member_id}&token=${userR.token}` : ''}`} >
-                            <LogoBlack style={{ width: "10px" }} /> 模型库
+                        <span onClick={goToMD} >
+                            <IconMD width={13} /> 模型库
                         </span>
                     </Space>
 
