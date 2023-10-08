@@ -6,6 +6,11 @@
   align-items: center;
   font-size: 48px;
   user-select: none;
+  > div {
+    position: relative;
+    width: 442*0.7Px;
+    margin: 0 auto;
+  }
 }
 
 .main {
@@ -14,6 +19,13 @@
   text-align: center;
   h3 {
     text-align: center;
+    font-size: var(--adm-font-size-10);
+  }
+  p {
+    padding: 0;
+    margin: 0;
+    font-size: var(--adm-font-size-6);
+    color: var(--adm-color-text-secondary);
   }
 }
 
@@ -53,8 +65,8 @@
 
 .st1 {
   display: block;
-  width: 442*0.8Px;
-  height: 650*0.8Px;
+  width: 442*0.7Px;
+  height: 650*0.7Px;
   background-image: url(./1.png);
   background-size: 100% 100%;
   border-radius: 20px;
@@ -62,8 +74,8 @@
 
 .st2{
   display: block;
-  width: 442*0.8Px;
-  height: 650*0.8Px;
+  width: 442*0.7Px;
+  height: 650*0.7Px;
   background-image: url(./2.png);
   background-size: 100% 100%;
   border-radius: 20px;
@@ -71,9 +83,18 @@
 
 .st3{
   display: block;
-  width: 442*0.8Px;
-  height: 650*0.8Px;
+  width: 442*0.7Px;
+  height: 650*0.7Px;
   background-image: url(./3.png);
+  background-size: 100% 100%;
+  border-radius: 20px;
+}
+
+.st4{
+  display: block;
+  width: 442*0.7Px;
+  height: 650*0.7Px;
+  background-image: url(./4.png);
   background-size: 100% 100%;
   border-radius: 20px;
 }
@@ -95,4 +116,24 @@
   border-color: var(--adm-color-success);
   background-color: var(--adm-color-success);
   color: #fff;
+}
+
+.msg {
+  position: absolute;
+  top: 328Px;
+  left: 37Px;
+  width: 238Px;
+  height: 100Px;
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  padding: 10Px;
+  margin: 0 auto;
+  font-size: var(--adm-font-size-7);
+  color: var(--adm-color-text);
+  text-align: left;
+}
+
+.msgb{
+  top: 230Px;
 }

@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useRef, useState, useEffect } from "react";
 import useDocumentTitle from "../../hooks/useDocumentTitle";
 import { useNavigate } from "react-router-dom";
 import { Button, Space, Swiper, Image, Badge, Dialog, List, Toast, Tag, Popover, ImageUploader, ImageUploadItem, Form } from "antd-mobile";
@@ -34,6 +34,8 @@ import useAddWeChat from "~/hooks/useAddWeChat";
 import { Action } from "antd-mobile/es/components/popover";
 import { ImageItem } from "../list/List";
 import { IconMD } from "~/compontents/IconMD";
+import { CloudKeys, cloudFunction } from "~/core/cloud";
+import loading from "~/compontents/Loading";
 
 dayjs.extend(duration);
 
@@ -84,7 +86,7 @@ const Home: React.FC<Props> = ({ name = "达文西Art-sketch" }) => {
             checkAuth();
             return;
         }
-
+        const days = dayjs(userR.serialCode?.end_at).diff(dayjs(), "day");
         Dialog.show({
             content: (
                 <>
@@ -104,7 +106,7 @@ const Home: React.FC<Props> = ({ name = "达文西Art-sketch" }) => {
                                     {license}
                                     {
                                         <div className={s.times}>
-                                            有效期至：<div>{dayjs(end_at).format("YYYY-MM-DD HH:mm:ss")}</div>
+                                            有效期至：<div>{dayjs(end_at).format("YYYY-MM-DD HH:mm:ss")}{days <= 0 ? <span style={{color: "red"}}>【过期】</span> : null}</div>
                                         </div>
                                     }
                                     <div>关联应用：
@@ -293,6 +295,35 @@ const Home: React.FC<Props> = ({ name = "达文西Art-sketch" }) => {
         [userR.auth, userR.member_id, userR.token],
       );
 
+    
+  const { complete_learning = [] } = userR.info || {};
+  useEffect(() => {
+    console.log(userR);
+    
+    if (userR.info && !complete_learning?.includes(2)) {
+      setVhelp(true)
+    }
+  }, [complete_learning, userR.info, userR])
+
+  const onLearning = useCallback(
+    async () => {
+      if (!complete_learning.includes(2)) {
+        loading.show();
+        const { code, data, msg } = await cloudFunction(CloudKeys.更新会员, {
+          complete_learning: [...complete_learning, 2],
+          member_id: userR.member_id
+        })
+        if (code === 200) {
+          user.info = data;
+        } else {
+          console.error(msg || "创建学习记录失败");
+        }
+        loading.hide()
+      }
+      setVhelp(false);
+    },
+    [complete_learning, userR.member_id],
+  )
 
 
     return (
@@ -399,7 +430,7 @@ const Home: React.FC<Props> = ({ name = "达文西Art-sketch" }) => {
 
                 </footer>
             </Space>
-            <HelpPopup visible={vhelp} onEnded={() => setVhelp(false)} />
+            <HelpPopup visible={vhelp} onEnded={onLearning} />
         </>
     );
 };

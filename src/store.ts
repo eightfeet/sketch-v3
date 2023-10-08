@@ -105,6 +105,7 @@ export interface UserInfo {
   created_at?: number;
   update_at?: number;
   login_at?: number;
+  complete_learning?: (1|2)[];
 }
 
 type Tasks = {
@@ -242,6 +243,8 @@ export const updateSN = (data: SerialCode) => {
   const days = dayjs(user.serialCode?.end_at).diff(dayjs(), "day");
   if (days >= 0) {
     user.auth = true;
+  } else {
+    user.auth = false;
   }
 };
 
