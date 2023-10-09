@@ -13,7 +13,6 @@ import { PlayOutline } from "antd-mobile-icons";
 import { sleep } from "~/core/helper";
 import PainterModel from "./PainterModel/PainterModel";
 import { Save } from "./Icons/Save";
-import { useDeviceDetect } from "./useDeviceDetect";
 
 interface changeProps {
   color?: string;
@@ -74,7 +73,6 @@ const Painter: React.FC<Props> = ({
   
   const currentStatus = useRef<"draw" | "undo" | "redo">("draw");
   const viewRef = useRef<HTMLDivElement>(null);
-  const { isMobile } = useDeviceDetect()
 
   const handleView = useCallback((img: HTMLImageElement) => {
     if (!isDev) return;
@@ -193,6 +191,7 @@ const Painter: React.FC<Props> = ({
       ctx.globalAlpha = 1;
       ctx.drawImage(img, 0, 0);
       count.current = Number(img.alt);
+      setLastImg(img)
     },
     [clean]
   );
@@ -274,34 +273,47 @@ const Painter: React.FC<Props> = ({
     setRedoStack([]);
     setShowClean(false);
   }, [clean]);
-
+  
   const [showSave, setShowSave] = useState(false);
   const [saveImg, setSaveImg] = useState<string>();
   const saveCanvasRef = useRef<HTMLCanvasElement>(null);
   const onSave = useCallback(async () => {
     if (!lastImg) return;
-    
     setShowSave(true);
     const ctx = saveCanvasRef.current?.getContext("2d");
-    
     if (!ctx) return;
     ctx.fillStyle = bgColor;
     ctx.fillRect(
       0,
       0,
-      window.innerWidth,
-      window.innerHeight
+      window.innerWidth * saveScale,
+      window.innerHeight * saveScale
     );
-    if (paperwhiteRef.current) {
-      ctx.drawImage(paperwhiteRef.current, 0, 0);
-    }
+    
+    // if (paperwhiteRef.current) {
+    //   ctx.drawImage(paperwhiteRef.current, 0, 0);
+    // }
     if (logo192.current && !auth) {
       ctx.drawImage(logo192.current, 10, 10);
     }
-    ctx.scale(saveScale,saveScale);
+    ctx.scale(saveScale,saveScale)
     ctx.drawImage(lastImg, 0, 0);
     setSaveImg(saveCanvasRef.current?.toDataURL());
   }, [auth, bgColor, lastImg]);
+
+  const handleSave = useCallback(
+    () => {
+      if (!saveImg) return;
+      const downloadLink = document.createElement('a');
+      downloadLink.href = saveImg;
+      downloadLink.download = `dawenxi_sk_${lastImg?.alt}.png`;
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
+      setShowSave(false);
+    },
+    [lastImg?.alt, saveImg],
+  );
 
   return (
     <div className={s.root} style={{ display: visible ? "block" : "none" }}>
@@ -398,9 +410,11 @@ const Painter: React.FC<Props> = ({
       <PainterModel
         maskStyle={{ backgroundColor: "rgba(0,0,0,0.3)" }}
         visiable={showSave}
-        title= {isMobile ? "长按保存到相册" : "右键保存图片"}
+        title= "保存图片"
         cancelText="关闭"
         onCancel={() => setShowSave(false)}
+        onOk={handleSave}
+        okText="保存"
       >
         <div className={s.saveimgbox}>
           <img src={saveImg} alt="t" />
@@ -490,7 +504,7 @@ const Painter: React.FC<Props> = ({
       />
       {
         <canvas
-          key={lastImg?.src}
+          key={`${lastImg?.src}${showSave}`}
           width={window.innerWidth*saveScale}
           height={window.innerHeight*saveScale}
           ref={saveCanvasRef}
