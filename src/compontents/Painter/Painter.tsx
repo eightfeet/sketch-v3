@@ -46,7 +46,7 @@ interface Props {
 }
 
 const isDev = import.meta.env.DEV;
-const saveScale = 2;
+const dpr = window.devicePixelRatio || 1.0;
 
 const Painter: React.FC<Props> = ({
   visible,
@@ -70,7 +70,7 @@ const Painter: React.FC<Props> = ({
   const count = useRef(0);
   const logo192 = useRef<HTMLImageElement>(null);
   const paperwhiteRef = useRef<HTMLImageElement>(null);
-  
+
   const currentStatus = useRef<"draw" | "undo" | "redo">("draw");
   const viewRef = useRef<HTMLDivElement>(null);
 
@@ -186,7 +186,11 @@ const Painter: React.FC<Props> = ({
   const drawImg = useCallback(
     (img: HTMLImageElement) => {
       const ctx = canvasRef.current?.getContext("2d");
-      if (!ctx || !img) return;
+      if (!ctx || !img || !canvasRef.current) return;
+      if (dpr !== 1.0) {
+        canvasRef.current.height = window.innerHeight * dpr;
+        canvasRef.current.width = window.innerWidth * dpr;
+      }
       clean();
       ctx.globalAlpha = 1;
       ctx.drawImage(img, 0, 0);
@@ -273,7 +277,7 @@ const Painter: React.FC<Props> = ({
     setRedoStack([]);
     setShowClean(false);
   }, [clean]);
-  
+
   const [showSave, setShowSave] = useState(false);
   const [saveImg, setSaveImg] = useState<string>();
   const saveCanvasRef = useRef<HTMLCanvasElement>(null);
@@ -281,22 +285,28 @@ const Painter: React.FC<Props> = ({
     if (!lastImg) return;
     setShowSave(true);
     const ctx = saveCanvasRef.current?.getContext("2d");
-    if (!ctx) return;
+    if (!saveCanvasRef.current || !ctx) return;
+    if (dpr !== 1.0) {
+      saveCanvasRef.current.height = window.innerHeight * dpr;
+        saveCanvasRef.current.width = window.innerWidth * dpr;
+        ctx?.scale(dpr, dpr)
+    }
+
     ctx.fillStyle = bgColor;
     ctx.fillRect(
       0,
       0,
-      window.innerWidth * saveScale,
-      window.innerHeight * saveScale
+      window.innerWidth,
+      window.innerHeight
     );
-    
+
     // if (paperwhiteRef.current) {
     //   ctx.drawImage(paperwhiteRef.current, 0, 0);
     // }
     if (logo192.current && !auth) {
       ctx.drawImage(logo192.current, 10, 10);
     }
-    ctx.scale(saveScale,saveScale)
+    ctx.scale(dpr, dpr)
     ctx.drawImage(lastImg, 0, 0);
     setSaveImg(saveCanvasRef.current?.toDataURL());
   }, [auth, bgColor, lastImg]);
@@ -330,9 +340,8 @@ const Painter: React.FC<Props> = ({
               <Pen />
             </div>
             <div
-              className={`${s.icon} ${
-                currentMode === "eraser" ? s.iconact : ""
-              }`}
+              className={`${s.icon} ${currentMode === "eraser" ? s.iconact : ""
+                }`}
               onClick={() => onChangeMode("eraser")}
             >
               <Eraser />
@@ -410,7 +419,7 @@ const Painter: React.FC<Props> = ({
       <PainterModel
         maskStyle={{ backgroundColor: "rgba(0,0,0,0.3)" }}
         visiable={showSave}
-        title= "保存图片"
+        title="保存图片"
         cancelText="关闭"
         onCancel={() => setShowSave(false)}
         onOk={handleSave}
@@ -419,6 +428,7 @@ const Painter: React.FC<Props> = ({
         <div className={s.saveimgbox}>
           <img src={saveImg} alt="t" />
         </div>
+        
       </PainterModel>
       <PainterModel
         visiable={showPlayer}
@@ -505,15 +515,15 @@ const Painter: React.FC<Props> = ({
       {
         <canvas
           key={`${lastImg?.src}${showSave}`}
-          width={window.innerWidth*saveScale}
-          height={window.innerHeight*saveScale}
+          width={window.innerWidth}
+          height={window.innerHeight}
           ref={saveCanvasRef}
           className={s.savecvs}
         ></canvas>
       }
       <div className={s.logo}>
         <img ref={logo192} src="./entrance/masklogo.png" alt="logo" />
-        <img ref={paperwhiteRef} src="./entrance/white_paper.jpg"alt="bg" />
+        <img ref={paperwhiteRef} src="./entrance/white_paper.jpg" alt="bg" />
       </div>
     </div>
   );

@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useCallback } from "react";
+import React, { useRef, useEffect } from "react";
 import { hex2rgba } from "./help";
 
 interface CanvasProps {
@@ -16,7 +16,7 @@ interface CanvasProps {
 }
 
 const isMobileDevice = typeof window.ontouchstart !== "undefined";
-
+const dpr = window.devicePixelRatio || 1.0;
 const Canvas: React.FC<CanvasProps> = ({
   lineColor = "#f00",
   eraser = false,
@@ -34,7 +34,15 @@ const Canvas: React.FC<CanvasProps> = ({
 
   useEffect(() => {
     if (canvasRef.current) {
-      getCanvas?.(canvasRef.current)
+      getCanvas?.(canvasRef.current);
+      console.log(dpr);
+      
+      if (dpr !== 1.0) {
+        canvasRef.current.height = window.innerHeight * dpr;
+        canvasRef.current.width = window.innerWidth * dpr;
+        const ctx = canvasRef.current.getContext("2d");
+        ctx?.scale(dpr, dpr)
+      }
     }
   }, [getCanvas]);
 
