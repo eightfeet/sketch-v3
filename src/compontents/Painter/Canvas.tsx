@@ -35,8 +35,6 @@ const Canvas: React.FC<CanvasProps> = ({
   useEffect(() => {
     if (canvasRef.current) {
       getCanvas?.(canvasRef.current);
-      console.log(dpr);
-      
       if (dpr !== 1.0) {
         canvasRef.current.height = window.innerHeight * dpr;
         canvasRef.current.width = window.innerWidth * dpr;
