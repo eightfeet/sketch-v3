@@ -282,31 +282,33 @@ const Painter: React.FC<Props> = ({
   const [saveImg, setSaveImg] = useState<string>();
   const saveCanvasRef = useRef<HTMLCanvasElement>(null);
   const onSave = useCallback(async () => {
-    if (!lastImg) return;
+    if (!lastImg || !saveCanvasRef.current) return;
     setShowSave(true);
     const ctx = saveCanvasRef.current?.getContext("2d");
-    if (!saveCanvasRef.current || !ctx) return;
+    if (!ctx) return;
+    let Width = window.innerWidth;
+    let Height = window.innerHeight;
     if (dpr !== 1.0) {
-      saveCanvasRef.current.height = window.innerHeight * dpr;
-        saveCanvasRef.current.width = window.innerWidth * dpr;
-        ctx?.scale(dpr, dpr)
+      Width = Width * dpr;
+      Height = Height * dpr;
     }
-
+    
+    saveCanvasRef.current.width = Width;
+    saveCanvasRef.current.height = Height;
+    
     ctx.fillStyle = bgColor;
     ctx.fillRect(
       0,
       0,
-      window.innerWidth,
-      window.innerHeight
+      Width,
+      Height
     );
-
     // if (paperwhiteRef.current) {
     //   ctx.drawImage(paperwhiteRef.current, 0, 0);
     // }
     if (logo192.current && !auth) {
       ctx.drawImage(logo192.current, 10, 10);
     }
-    ctx.scale(dpr, dpr)
     ctx.drawImage(lastImg, 0, 0);
     setSaveImg(saveCanvasRef.current?.toDataURL());
   }, [auth, bgColor, lastImg]);
@@ -515,8 +517,6 @@ const Painter: React.FC<Props> = ({
       {
         <canvas
           key={`${lastImg?.src}${showSave}`}
-          width={window.innerWidth}
-          height={window.innerHeight}
           ref={saveCanvasRef}
           className={s.savecvs}
         ></canvas>
