@@ -180,7 +180,7 @@ const Painter: React.FC<Props> = ({
   const clean = useCallback(() => {
     const ctx = canvasRef.current?.getContext("2d");
     if (!ctx) return;
-    ctx.clearRect(0, 0, 10000, 10000);
+    ctx.clearRect(0, 0,  window.innerHeight * dpr,  window.innerHeight * dpr);
   }, []);
 
   const drawImg = useCallback(
@@ -194,6 +194,7 @@ const Painter: React.FC<Props> = ({
       clean();
       ctx.globalAlpha = 1;
       ctx.drawImage(img, 0, 0);
+      ctx?.scale(dpr, dpr);
       count.current = Number(img.alt);
       setLastImg(img)
     },
