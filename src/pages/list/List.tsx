@@ -157,7 +157,7 @@ const List: React.FC<Props> = ({ name = "选择素材" }) => {
 
   const onFilter = useCallback((data: { [key: string]: string[] }) => {
     setFilterPopupVisible(false);
-    runningTime.fliterData = { ...runningTime.fliterData, ...data };
+    runningTime.fliterData = data;
   }, []);
 
   const addWeChat = useAddWeChat();
