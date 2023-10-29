@@ -232,7 +232,7 @@ const List: React.FC<Props> = ({ name = "选择素材" }) => {
             color="primary"
             className={s.btn}
             onClick={onRandom}
-            style={{overflow: "hidden"}}
+            style={{ overflow: "hidden" }}
           >
             {fliterData.order_by === "key" ? <IconRandom width={22} /> :
               <IconSort width={22} />}
@@ -276,7 +276,8 @@ const List: React.FC<Props> = ({ name = "选择素材" }) => {
                 />
               );
             })
-            : mock.map((item, index) => {
+            : null}
+            {!auth && mock.map((item, index) => {
               const isSelected = selected?.some(
                 (selectItem) => item._id === selectItem._id
               );
@@ -293,10 +294,11 @@ const List: React.FC<Props> = ({ name = "选择素材" }) => {
               );
             })}
         </wc-waterfall>
-        {!auth ? (
+        {!auth ? (<>
           <p style={{ textAlign: "center" }} onClick={checkAuth}>
             查看更多素材请先激活产品
           </p>
+        </>
         ) : null}
 
         {/* 下一页 */}

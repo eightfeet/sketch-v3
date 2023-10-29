@@ -1,14 +1,14 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 // import s from './Filter.module.scss';
-import { Avatar, Button, Dialog, Form, Popup, PopupProps, Selector } from "antd-mobile";
+import { Avatar, Button, Dialog, Form, Popup, PopupProps } from "antd-mobile";
 import { FormItem } from "antd-mobile/es/components/form/form-item";
-import { PicturesOutline } from "antd-mobile-icons";
 import { useSnapshot } from "valtio";
 import { user } from "~/store";
 import { Logo } from "../Logo";
 import s from './Filter.module.scss'
 import Activation from "../Activation";
 import useAddWeChat from "~/hooks/useAddWeChat";
+import FilterItem from "./FilterItem";
 
 enum category {
   全部 = "0",
@@ -24,7 +24,7 @@ interface Props {
   onFilter?: (result: valType) => void;
   onChange?: (data: valType, currentKey: string) => void;
   defaultValues?: valType;
-  data?: { [key: string]: any}[];
+  data?: { [key: string]: any }[];
   list?: any[]
 }
 
@@ -135,17 +135,17 @@ const Filter: React.FC<Props & PopupProps> = ({
 
   const checkAuth = useCallback(() => {
     Dialog.show({
-        content: <Activation
-            onSucess={() => Dialog.clear()}
-            onGetSN={() => {
-                Dialog.clear();
-                addWeChat();
-            }}
-            onCancel={() => Dialog.clear()}
-        />,
-        actions: [],
+      content: <Activation
+        onSucess={() => Dialog.clear()}
+        onGetSN={() => {
+          Dialog.clear();
+          addWeChat();
+        }}
+        onCancel={() => Dialog.clear()}
+      />,
+      actions: [],
     });
-}, [addWeChat]);
+  }, [addWeChat]);
 
   return (
     <Popup className={s.root} {...props}>
@@ -163,7 +163,7 @@ const Filter: React.FC<Props & PopupProps> = ({
                   [key: string]: string
                 };
                 return !isPerson && (item.name === "gender" || item.name === "sub") ? null : <FormItem key={index} name={item.name} label={item.title}>
-                  <Selector style={{ "--padding": "5px 10px", }} multiple options={Object.keys(tags).map(key => ({
+                  <FilterItem buttonClassName={s.other_button} options={Object.keys(tags).map(key => ({
                     label: tags[key],
                     value: key,
                   }))} />
@@ -172,26 +172,10 @@ const Filter: React.FC<Props & PopupProps> = ({
             }
 
             <FormItem name="poses_id" label="模特">
-              <Selector
-                style={{ height: "30vh", overflowY: "auto" }}
-                multiple
-                options={([
-                  {
-                    label: (
-                      <div>
-                        <PicturesOutline />
-                        <div>全部</div>
-                      </div>
-                    ),
-                    value: "0",
-                  },
-                ].concat(
-                  list?.map((item: any, index: number) => ({
-                    label: <Avatar key={index} src={`${import.meta.env.VITE_APP_POSESURL}${item.url}`} fit="contain" />,
-                    value: item.poses_id,
-                  })) || [])
-                )}
-              />
+              <FilterItem wrapClassName={s.poses_wrap} buttonClassName={s.poses_button} options={list?.map((item: any, index: number) => ({
+                label: <Avatar key={index} src={`${import.meta.env.VITE_APP_POSESURL}${item.url}`} fit="contain" />,
+                value: item.poses_id,
+              }))} />
             </FormItem>
           </Form>
         </div>

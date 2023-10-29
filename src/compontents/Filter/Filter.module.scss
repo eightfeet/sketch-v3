@@ -2,3 +2,20 @@
     font-size: normal;
     --padding: 0
 }
+
+.poses_wrap {
+    height: 330px;
+    overflow-y: auto;
+}
+.poses_button {
+    width: 150px;
+    height: 150px;
+    span div{
+        width: 100%;
+        height: 100%;
+    }
+}
+
+.other_button {
+    padding: 0 25px !important;
+}
