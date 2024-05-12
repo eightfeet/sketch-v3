@@ -11,15 +11,15 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <App />
   </React.StrictMode>,
 )
-const { member_id, token } = qs.parse(window.location.search);
+// const { member_id, token } = qs.parse(window.location.search);
 
-if (member_id && token) {
-  loading.show()
-  getUserInfo({
-    member_id: member_id as string,
-    token: token as string
-  }).then(() => loading.hide()).catch(() => loading.hide())
-}
+// if (member_id && token) {
+//   loading.show()
+//   getUserInfo({
+//     member_id: member_id as string,
+//     token: token as string
+//   }).then(() => loading.hide()).catch(() => loading.hide())
+// }
 
 // loadScript("https://unpkg.com/vconsole@latest/dist/vconsole.min.js").then(() => {
 //   new (window as any).VConsole();
