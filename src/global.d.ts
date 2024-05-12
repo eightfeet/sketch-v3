@@ -1,4 +1,6 @@
-import { Waterfall } from 'wc-waterfall'
+import { Waterfall } from 'wc-waterfall';
+import { Howl } from "howler";
+
 
 declare global {
     namespace JSX {
@@ -7,7 +9,7 @@ declare global {
         }
     }
     interface Window {
-        warnPlayer: HTMLAudioElement;
+        warnPlayer: Howl;
         cloud: any;
         wx: any;
         VConsole: any;

@@ -31,9 +31,9 @@ try {
   console.error(error);
 }
 
-// subscribe(runningTime, () => {
-//   localStorage.setItem("sk_runningTime", JSON.stringify(runningTime));
-// });
+subscribe(runningTime, () => {
+  localStorage.setItem("sk_runningTime", JSON.stringify(runningTime));
+});
 
 export interface PainterData {
   showPanter: boolean;

@@ -40,6 +40,7 @@ const PlayIcon: React.FC<React.SVGProps<SVGSVGElement>> = ({ onClick, ...props }
             //     checkAuth();
             //     return;
             // }
+            
             onPlay();
             onClick?.(e);
         },

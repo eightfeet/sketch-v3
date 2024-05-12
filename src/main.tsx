@@ -1,15 +1,17 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './compontents/App'
-import ReactAudioPlayer from 'react-audio-player';
-// import loadScript from './core/loadScript';
+import { Howl } from "howler";
 
+// import loadScript from './core/loadScript';
+window.warnPlayer = new Howl({
+  src: `./warning.mp3`,
+});
 
 export const Main: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
     <div>
       {children}
-      <ReactAudioPlayer onCanPlay={(e) => window.warnPlayer = e.target as HTMLAudioElement} src="./warning.mp3" />
     </div>
   )
 }
