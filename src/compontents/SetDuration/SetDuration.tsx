@@ -1,18 +1,19 @@
-import { Dialog, Form, Slider } from 'antd-mobile';
+import { Dialog, Form, Slider, Switch } from 'antd-mobile';
 import React, { useCallback, useRef } from 'react';
 import { useSnapshot } from 'valtio'
 import { runningTime } from '~/store';
 
 
 const SetDuration: React.FC<React.HTMLAttributes<HTMLSpanElement>> = ({ children, ...props }) => {
-    const { duration } = useSnapshot(runningTime);
+    const { duration, isWarn } = useSnapshot(runningTime);
     const timeRef = useRef<HTMLSpanElement>(null)
     const form = Form.useForm()[0];
 
     const onConfirm = useCallback(
         () => {
-            const { min = 0, sec = 0 } = form.getFieldsValue();
-            runningTime.duration = min * 60 + sec
+            const { min = 0, sec = 0, isWarn } = form.getFieldsValue();
+            runningTime.duration = min * 60 + sec;
+            runningTime.isWarn = isWarn;
         },
         [form],
     );
@@ -38,12 +39,15 @@ const SetDuration: React.FC<React.HTMLAttributes<HTMLSpanElement>> = ({ children
                     <Form.Item name="sec" label="秒钟" initialValue={duration % 60}>
                         <Slider min={0} max={59} />
                     </Form.Item>
+                    <Form.Item name="isWarn" layout="horizontal" label="结束语音提醒" initialValue={isWarn} valuePropName="checked">
+                        <Switch checkedText="开启" uncheckedText="关闭"  />
+                    </Form.Item>
                 </Form>,
                 onConfirm,
                 style: {zIndex: 2001}
             });
         },
-        [duration, form, handleFieldsChange, onConfirm],
+        [duration, form, handleFieldsChange, isWarn, onConfirm],
     );
 
     return (

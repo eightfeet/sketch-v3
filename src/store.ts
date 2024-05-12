@@ -7,11 +7,16 @@ interface RunningTime {
   selected?: ImageItem[];
   duration: number;
   formatTime?: string;
-  fliterData?: { [key: string]: string[] | string }
+  fliterData?: { [key: string]: string[] | string };
+  // 是否结束警告
+  isWarn: boolean;
+  warnStart: number;
 }
 
 export const runningTime = proxy<RunningTime>({
   duration: 300,
+  isWarn: true,
+  warnStart: 4
 });
 
 try {
@@ -26,9 +31,9 @@ try {
   console.error(error);
 }
 
-subscribe(runningTime, () => {
-  localStorage.setItem("sk_runningTime", JSON.stringify(runningTime));
-});
+// subscribe(runningTime, () => {
+//   localStorage.setItem("sk_runningTime", JSON.stringify(runningTime));
+// });
 
 export interface PainterData {
   showPanter: boolean;

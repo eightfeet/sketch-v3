@@ -1,7 +1,6 @@
 // import { Dialog } from 'antd-mobile';
 import { PlayOutline } from 'antd-mobile-icons';
-import React, { useCallback, useRef } from 'react';
-import ReactAudioPlayer from "react-audio-player";
+import React, { useCallback } from 'react';
 // import Activation from '../Activation';
 // import useAddWeChat from '~/hooks/useAddWeChat';
 // import { useSnapshot } from 'valtio';
@@ -10,14 +9,13 @@ import ReactAudioPlayer from "react-audio-player";
 // import s from './PlayIcon.module.scss';
 
 const PlayIcon: React.FC<React.SVGProps<SVGSVGElement>> = ({ onClick, ...props }) => {
-    const player = useRef<ReactAudioPlayer>(null);
     // const userR = useSnapshot(user);
-  // const addWeChat = useAddWeChat();
+    // const addWeChat = useAddWeChat();
 
     const onPlay = useCallback(
         () => {
-            player.current?.audioEl.current?.play();
-            player.current?.audioEl.current?.pause();
+            window.warnPlayer?.play();
+            window.warnPlayer?.pause();
         },
         [],
     );
@@ -48,10 +46,8 @@ const PlayIcon: React.FC<React.SVGProps<SVGSVGElement>> = ({ onClick, ...props }
         [onClick, onPlay],
     )
 
-    return (<>
-        <ReactAudioPlayer ref={player} src="./warning.mp3" />
-        <PlayOutline fontSize={32} onClick={handleClick} {...props} />
-    </>
+    return (<PlayOutline fontSize={32} onClick={handleClick} {...props} />
+
     )
 }
 

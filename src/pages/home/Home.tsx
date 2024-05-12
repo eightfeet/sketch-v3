@@ -35,27 +35,30 @@ dayjs.extend(duration);
 
 const images = [
     's1.jpg', 's2.jpg', 's3.jpg', 's4.jpg', 's5.jpg',
-    's6.jpg', 's7.jpg', 's8.jpg', 's9.jpg', 's10.jpg', 
-    's11.jpg', 's12.jpg', 's13.jpg', 's14.jpg', 's15.jpg', 
+    's6.jpg', 's7.jpg', 's8.jpg', 's9.jpg', 's10.jpg',
+    's11.jpg', 's12.jpg', 's13.jpg', 's14.jpg', 's15.jpg',
 ]
+
 
 function getRandomUniqueElements<T>(arr: T[], count: number): T[] {
     if (count > arr.length) {
-      throw new Error('Count exceeds array length');
+        throw new Error('Count exceeds array length');
     }
-  
+
     const result: T[] = [];
     const pickedIndices: number[] = [];
-  
+
     while (result.length < count) {
-      const randomIndex = Math.floor(Math.random() * arr.length);
-      if (!pickedIndices.includes(randomIndex)) {
-        pickedIndices.push(randomIndex);
-        result.push(arr[randomIndex]);
-      }
+        const randomIndex = Math.floor(Math.random() * arr.length);
+        if (!pickedIndices.includes(randomIndex)) {
+            pickedIndices.push(randomIndex);
+            result.push(arr[randomIndex]);
+        }
     }
     return result;
-  }
+}
+
+const imagesUse = getRandomUniqueElements(images, 5);
 
 interface Props {
     name?: string;
@@ -124,7 +127,7 @@ const Home: React.FC<Props> = ({ name = "达文西Art-sketch" }) => {
                                     {license}
                                     {
                                         <div className={s.times}>
-                                            有效期至：<div>{dayjs(end_at).format("YYYY-MM-DD HH:mm:ss")}{days <= 0 ? <span style={{color: "red"}}>【过期】</span> : null}</div>
+                                            有效期至：<div>{dayjs(end_at).format("YYYY-MM-DD HH:mm:ss")}{days <= 0 ? <span style={{ color: "red" }}>【过期】</span> : null}</div>
                                         </div>
                                     }
                                     <div>关联应用：
@@ -300,48 +303,50 @@ const Home: React.FC<Props> = ({ name = "达文西Art-sketch" }) => {
 
     const goToMD = useCallback(
         () => {
-          Dialog.confirm({
-            title: <IconMD width={60} />,
-            content: <Space block align="center" direction="vertical" style={{ width: "100%"}}>
-              <div>即将前往模型工具 <b>达文西Art-Model</b></div>
-            </Space>,
-            onConfirm() {
-              window.location.href = `${import.meta.env.VITE_APP_MODELURL}${userR.auth ? `?member_id=${userR.member_id}&token=${userR.token}` : ''}`
-            },
-          });
+            Dialog.confirm({
+                title: <IconMD width={60} />,
+                content: <Space block align="center" direction="vertical" style={{ width: "100%" }}>
+                    <div>即将前往模型工具 <b>达文西Art-Model</b></div>
+                </Space>,
+                onConfirm() {
+                    window.location.href = `${import.meta.env.VITE_APP_MODELURL}${userR.auth ? `?member_id=${userR.member_id}&token=${userR.token}` : ''}`
+                },
+            });
         },
         [userR.auth, userR.member_id, userR.token],
-      );
+    );
 
-    
-  const { complete_learning = [] } = userR.info || {};
-  useEffect(() => {
-    console.log(userR);
-    
-    if (userR.info && !complete_learning?.includes(2)) {
-      setVhelp(true)
-    }
-  }, [complete_learning, userR.info, userR])
 
-  const onLearning = useCallback(
-    async () => {
-      if (!complete_learning.includes(2)) {
-        loading.show();
-        const { code, data, msg } = await cloudFunction(CloudKeys.更新会员, {
-          complete_learning: [...complete_learning, 2],
-          member_id: userR.member_id
-        })
-        if (code === 200) {
-          user.info = data;
-        } else {
-          console.error(msg || "创建学习记录失败");
+    const { complete_learning = [] } = userR.info || {};
+    useEffect(() => {
+        console.log(userR);
+
+        if (userR.info && !complete_learning?.includes(2)) {
+            setVhelp(true)
         }
-        loading.hide()
-      }
-      setVhelp(false);
-    },
-    [complete_learning, userR.member_id],
-  )
+    }, [complete_learning, userR.info, userR])
+
+    const onLearning = useCallback(
+        async () => {
+            if (!complete_learning.includes(2)) {
+                loading.show();
+                const { code, data, msg } = await cloudFunction(CloudKeys.更新会员, {
+                    complete_learning: [...complete_learning, 2],
+                    member_id: userR.member_id
+                })
+                if (code === 200) {
+                    user.info = data;
+                } else {
+                    console.error(msg || "创建学习记录失败");
+                }
+                loading.hide()
+            }
+            setVhelp(false);
+        },
+        [complete_learning, userR.member_id],
+    )
+
+    
 
 
     return (
@@ -354,10 +359,10 @@ const Home: React.FC<Props> = ({ name = "达文西Art-sketch" }) => {
                 className={s.root}
             >
                 <div className={s.top}>
-                    <Swiper className={s.swp} autoplay={false} loop indicator={() =><></>} >
-                        {getRandomUniqueElements(images, 5).map((item, index) => (
+                    <Swiper className={s.swp} autoplay={false} loop indicator={() => <></>} >
+                        {imagesUse.map((item, index) => (
                             <Swiper.Item key={index} className={s.switem}>
-                                <Img src={item}/>
+                                <Img src={item} />
                             </Swiper.Item>
                         ))}
                     </Swiper>

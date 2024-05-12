@@ -6,10 +6,11 @@ declare global {
             ['wc-waterfall']: CustomElement<Waterfall>;
         }
     }
+    interface Window {
+        warnPlayer: HTMLAudioElement;
+        cloud: any;
+        wx: any;
+        VConsole: any;
+    }
 }
 
-interface Window {
-    cloud: any;
-    wx: any;
-    VConsole: any
-}

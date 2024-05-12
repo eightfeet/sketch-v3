@@ -4,7 +4,6 @@ import useDocumentTitle from "~/hooks/useDocumentTitle";
 import { useSnapshot } from 'valtio'
 import { runningTime, painter, user } from "~/store";
 import Timer from "./components/Timer";
-import ReactAudioPlayer from "react-audio-player";
 import classNames from 'classnames'
 import s from './View.module.scss'
 import { SlidesRef } from "antd-mobile/es/components/image-viewer/slides";
@@ -23,10 +22,9 @@ interface Props {
 
 const View: React.FC<Props> = ({ name = "view" }) => {
   useDocumentTitle(name);
-  const player = useRef<ReactAudioPlayer>(null);
   const imageViewRef = useRef<SlidesRef>(null);
   const [popupVisible, setPopupVisible] = useState(false);
-  const { selected = [] } = useSnapshot(runningTime);
+  const { selected = [], warnStart, isWarn } = useSnapshot(runningTime);
 
   const painterR = useSnapshot(painter);
   const userR = useSnapshot(user);
@@ -59,18 +57,18 @@ const View: React.FC<Props> = ({ name = "view" }) => {
 
   const onUpdate = useCallback(
     (remainingTime: number) => {
-      if (remainingTime === 4) {
-        player.current?.audioEl.current?.play();
+      if (remainingTime === warnStart) {
+        if(isWarn){window.warnPlayer?.play();}
         setWranTime(true);
       }
-      if (remainingTime < 4) {
+      if (remainingTime < warnStart) {
         !wranTime && setWranTime(false);
       }
-      if (remainingTime > 4) {
+      if (remainingTime > warnStart) {
         wranTime && setWranTime(true);
       }
     },
-    [wranTime]
+    [warnStart, wranTime, isWarn]
   );
 
   useEffect(() => {
@@ -126,7 +124,6 @@ const View: React.FC<Props> = ({ name = "view" }) => {
           isPlaying={!painterR.showPanter}
           wranTime={true}
         />
-        <ReactAudioPlayer ref={player} src="./warning.mp3" />
       </div>
     </SetDuration>
     <SelectedList

@@ -1,15 +1,26 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './compontents/App'
-import qs from 'query-string';
-import { getUserInfo } from './store';
-import loading from './compontents/Loading';
+import ReactAudioPlayer from 'react-audio-player';
 // import loadScript from './core/loadScript';
 
+
+export const Main: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  return (
+    <div>
+      {children}
+      <ReactAudioPlayer onCanPlay={(e) => window.warnPlayer = e.target as HTMLAudioElement} src="./warning.mp3" />
+    </div>
+  )
+}
+
+
 ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
+  // <React.StrictMode>
+  <Main>
     <App />
-  </React.StrictMode>,
+  </Main>
+  // </React.StrictMode>,
 )
 // const { member_id, token } = qs.parse(window.location.search);
 
