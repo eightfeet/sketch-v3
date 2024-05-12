@@ -17,13 +17,6 @@ import {
     UserOutline,
 } from "antd-mobile-icons";
 import PlayIcon from "~/compontents/PlayIcon";
-import img from "./show.jpeg";
-import img3 from "./show3.jpeg";
-import img4 from "./show4.jpeg";
-import img5 from "./show5.jpeg";
-import img6 from "./show6.jpeg";
-import img7 from "./show7.jpeg";
-import img8 from "./show8.jpeg";
 
 import s from "./Home.module.scss";
 import SetDuration from "~/compontents/SetDuration";
@@ -36,8 +29,33 @@ import { ImageItem } from "../list/List";
 import { IconMD } from "~/compontents/IconMD";
 import { CloudKeys, cloudFunction } from "~/core/cloud";
 import loading from "~/compontents/Loading";
+import Img from "./Img";
 
 dayjs.extend(duration);
+
+const images = [
+    's1.jpg', 's2.jpg', 's3.jpg', 's4.jpg', 's5.jpg',
+    's6.jpg', 's7.jpg', 's8.jpg', 's9.jpg', 's10.jpg', 
+    's11.jpg', 's12.jpg', 's13.jpg', 's14.jpg', 's15.jpg', 
+]
+
+function getRandomUniqueElements<T>(arr: T[], count: number): T[] {
+    if (count > arr.length) {
+      throw new Error('Count exceeds array length');
+    }
+  
+    const result: T[] = [];
+    const pickedIndices: number[] = [];
+  
+    while (result.length < count) {
+      const randomIndex = Math.floor(Math.random() * arr.length);
+      if (!pickedIndices.includes(randomIndex)) {
+        pickedIndices.push(randomIndex);
+        result.push(arr[randomIndex]);
+      }
+    }
+    return result;
+  }
 
 interface Props {
     name?: string;
@@ -336,10 +354,10 @@ const Home: React.FC<Props> = ({ name = "达文西Art-sketch" }) => {
                 className={s.root}
             >
                 <div className={s.top}>
-                    <Swiper className={s.swp} autoplay loop >
-                        {[img, img3, img4, img5, img6, img7, img8].map((item, index) => (
+                    <Swiper className={s.swp} autoplay={false} loop indicator={() =><></>} >
+                        {getRandomUniqueElements(images, 5).map((item, index) => (
                             <Swiper.Item key={index} className={s.switem}>
-                                <Image className={s.imgs} src={item} fit="cover" />
+                                <Img src={item}/>
                             </Swiper.Item>
                         ))}
                     </Swiper>
@@ -380,9 +398,9 @@ const Home: React.FC<Props> = ({ name = "达文西Art-sketch" }) => {
                             <Badge content={selected.length || null}>
                                 <Popover.Menu
                                     actions={[
-                                        { key: 'gallery', icon: <AppstoreOutline />, text: '图库' },
-                                        { key: 'album', icon: <PicturesOutline />, text: '相册' },
-                                        { key: 'clear', icon: <DeleteOutline />, text: '清空' }
+                                        // { key: 'gallery', icon: <AppstoreOutline />, text: '图库' },
+                                        { key: 'album', icon: <PicturesOutline />, text: '选择图片' },
+                                        { key: 'clear', icon: <DeleteOutline />, text: '清空已选' }
                                     ]}
                                     placement='bottom-start'
                                     onAction={selectPicture}
@@ -418,8 +436,8 @@ const Home: React.FC<Props> = ({ name = "达文西Art-sketch" }) => {
 
                 <footer style={{ paddingBottom: "50Px", textAlign: "center" }}>
                     <Space block >
-                        <span onClick={showUser}><UserOutline /> {!userR.auth ? "序列号激活" : "个人中心"} </span>
-                        <span onClick={onAct}><KeyOutline /> 我有邀请码 </span>
+                        {/* <span onClick={showUser}><UserOutline /> {!userR.auth ? "序列号激活" : "个人中心"} </span>
+                        <span onClick={onAct}><KeyOutline /> 我有邀请码 </span> */}
                         <span onClick={() => setVhelp(true)}>
                             <QuestionCircleOutline /> 如何使用
                         </span>
