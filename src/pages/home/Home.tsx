@@ -445,12 +445,14 @@ const Home: React.FC<Props> = ({ name = "达文西Art-sketch" }) => {
                     <Space block >
                         {/* <span onClick={showUser}><UserOutline /> {!userR.auth ? "序列号激活" : "个人中心"} </span>
                         <span onClick={onAct}><KeyOutline /> 我有邀请码 </span> */}
+                        <span onClick={() => navigator("/list")} style={{ width: 20, height: 20, display: 'block'}}>&nbsp;</span>
                         <span onClick={() => setVhelp(true)}>
                             <QuestionCircleOutline /> 如何使用
                         </span>
                         <span onClick={goToMD} >
                             <IconMD width={13} /> 模型库
                         </span>
+                        <span>&nbsp;</span>
                     </Space>
 
                 </footer>
