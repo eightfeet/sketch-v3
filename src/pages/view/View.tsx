@@ -15,6 +15,7 @@ import Painter from "~/compontents/Painter";
 import { onChangeParams } from "~/compontents/Painter/Painter";
 import { LogoBlack } from "~/compontents/LogoBlack";
 import { IconBlack } from "~/compontents/IconBlack";
+import DrawingBoard from "~/compontents/DrawingBoard";
 
 interface Props {
   name?: string;
@@ -130,7 +131,7 @@ const View: React.FC<Props> = ({ name = "view" }) => {
       visible={popupVisible}
       onMaskClick={() => setPopupVisible(false)}
     />
-    <Painter
+    {/* <Painter
       visible={painterR.showPanter}
       onClose={() => painter.showPanter = false}
       onChange={onChangePainter}
@@ -143,7 +144,8 @@ const View: React.FC<Props> = ({ name = "view" }) => {
       lineAlph={painterR.lineAlph}
       historyRecords={1000}
       auth={userR.auth}
-    />
+    /> */}
+    <DrawingBoard visible={painterR.showPanter} bgimg={selected[imgIndex]} />
   </div>;
 };
 

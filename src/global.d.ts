@@ -13,6 +13,8 @@ declare global {
         cloud: any;
         wx: any;
         VConsole: any;
+        webGLRenderer: any
     }
 }
 
+declare module './Drawer';

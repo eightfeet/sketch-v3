@@ -1,0 +1,102 @@
+.root {
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    font-size: 1rem;
+    user-select: none;
+}
+
+.toolbar {
+    position: absolute;
+    z-index: 501;
+    box-sizing: border-box;
+    top: 10px;
+    left: 10px;
+    background-color: #fff;
+    height: 0;
+
+    .btns{
+        display: flex;
+    }
+}
+
+.block {
+    border: 1px solid #000;
+    border-radius: 0.3rem;
+    padding: 0.5rem;
+    height: 1rem;
+    flex: 0;
+    display: flex;
+    align-items: center;
+    margin: 0.3rem;
+    svg {
+        display: block;
+        width: 1rem;
+        height: 1rem;
+        path {
+            fill: 'currentColor';
+        }
+    }
+
+    &.act, &:active {
+        color: #fff;
+        background: #000;
+    }
+}
+
+.savecvs {
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 1;
+    pointer-events: none;
+    opacity: 0;
+    width: 100vw;
+    height: 100vh;
+  }
+
+  .imagecontent {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
+
+  .colorPick, .linewidthPick, .savebox {
+    z-index: 502;
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100vw;
+    height: 100vh;
+    > div {
+        flex-shrink: 0;
+    }
+  }
+
+  .savebox {
+    background-color: rgba(0,0,0,0.5);
+    text-align: center;
+  }
+
+  .dot {
+    display: block;
+    background-color: #000;
+  }
+
+  .dotitem {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
