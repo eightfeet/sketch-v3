@@ -87,7 +87,20 @@ const View: React.FC<Props> = ({ name = "view" }) => {
     [],
   )
 
-  const [isBlack, setIsBlack] = useState(false)
+  const [isBlack, setIsBlack] = useState(false);
+
+  useEffect(() => {
+    document.addEventListener('contextmenu', (event) => {
+      event.preventDefault();
+    }, false);
+  
+    return () => {
+      document.removeEventListener('contextmenu', (event) => {
+        event.preventDefault();
+      }, false);
+    }
+  }, [])
+  
 
   return <div className={classNames(s.root, {
     [s.gray]: isBlack

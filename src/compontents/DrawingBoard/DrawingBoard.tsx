@@ -82,7 +82,17 @@ const DrawingBoard: React.FC<Props> = ({ visible, bgimg }) => {
     useEffect(() => {
         if (visible) {
             setTimeout(() => {
-                setShoot( bgimg?.url)
+                const isDataImage = bgimg?.url.indexOf("data:image") === -1;
+                const url = `${isDataImage ? import.meta.env.VITE_APP_POSESURL : ''}${bgimg?.url}`
+                if (isDataImage) {
+                    setShoot(url)
+                } else {
+                    const img = new Image();
+                    img.onload = function () { 
+                        setShoot(url)
+                    }
+                    img.src=url;
+                }
             }, 50);
         }
         return () => {
@@ -285,7 +295,7 @@ const DrawingBoard: React.FC<Props> = ({ visible, bgimg }) => {
                     enablePanAndZoom: true,
                     clampLinesToDocument: false,
                     mouseZoomFactor: 0.01,
-                    zoomExtents: { min: 0.3, max: 3 },
+                    zoomExtents: { min: 0.1, max: 3 },
                 }}
             />
             {
