@@ -38,7 +38,7 @@ const DrawingBoard: React.FC<Props> = ({ visible, bgimg }) => {
         return img;
     }, []);
     // 保存图片
-    const onSave = useCallback(async () => {
+    const onSave = useCallback(async (alpha?: boolean) => {
         if (!saveCanvasRef.current) return;
         const ctx = saveCanvasRef.current?.getContext("2d");
         if (!ctx) return;
@@ -54,7 +54,10 @@ const DrawingBoard: React.FC<Props> = ({ visible, bgimg }) => {
 
         imageContentRef.current?.appendChild(gridImg);
         gridImg.onload = () => {
-            ctx.drawImage(gridImg, 0, 0);
+            if (alpha !== true) {
+                ctx.drawImage(gridImg, 0, 0);
+            }
+
             imageContentRef.current?.appendChild(drwaImg);
             drwaImg.onload = async () => {
                 ctx.drawImage(drwaImg, 0, 0);
@@ -88,10 +91,10 @@ const DrawingBoard: React.FC<Props> = ({ visible, bgimg }) => {
                     setShoot(url)
                 } else {
                     const img = new Image();
-                    img.onload = function () { 
+                    img.onload = function () {
                         setShoot(url)
                     }
-                    img.src=url;
+                    img.src = url;
                 }
             }, 50);
         }
@@ -171,6 +174,16 @@ const DrawingBoard: React.FC<Props> = ({ visible, bgimg }) => {
 
     const [showSave, setShowSave] = useState(false);
 
+    const [longTouchTime, setLongTouchTime] = useState(0);
+    const onChackLongTouch = useCallback(
+        () => {
+            const lastTime = Date.now() - longTouchTime;
+            if (lastTime >= 2000) {
+                onSave(true)
+            }
+        },
+        [longTouchTime, onSave],)
+
     if (!visible) return null;
     return (
         <div className={s.root}>
@@ -220,7 +233,7 @@ const DrawingBoard: React.FC<Props> = ({ visible, bgimg }) => {
                         } */}
                     <div
                         className={classNames(s.block, { [s.act]: false })}
-                        onClick={onSave}
+                        onClick={() => onSave()}
                     // onClick={handleSave}
                     >
                         <Saves />
@@ -237,6 +250,14 @@ const DrawingBoard: React.FC<Props> = ({ visible, bgimg }) => {
                         onClick={handleClose}
                     >
                         <Close />
+                    </div>
+                    <div
+                        className={classNames(s.block, { [s.act]: false })}
+                        style={{opacity: 0}}
+                        onPointerDown={() => setLongTouchTime(Date.now())} 
+                        onPointerUp={onChackLongTouch}
+                    >
+                        <Saves  />
                     </div>
                 </div>
 
