@@ -7,7 +7,7 @@ import ResizeObserver from "resize-observer-polyfill";
 
 import CoordinateSystem, { IDENTITY } from "./coordinateSystem";
 import drawImage from "./drawImage";
-import { DefaultState } from "./interactionStateMachine";
+import { DefaultState, clientPointFromEvent } from "./interactionStateMachine";
 import makePassiveEventOption from "./makePassiveEventOption";
 
 function midPointBtw(p1, p2) {
@@ -23,7 +23,7 @@ const canvasStyle = {
 };
 
 // The order of these is important: grid > drawing > temp > interface
-const canvasTypes = ["grid", "drawing", "temp", "interface"];
+const canvasTypes = ["grid", "drawing", "temp", "line", "interface"];
 
 const dimensionsPropTypes = PropTypes.oneOfType([
   PropTypes.number,
@@ -62,6 +62,8 @@ export default class CanvasDraw extends PureComponent {
     mouseZoomFactor: PropTypes.number,
     zoomExtents: boundsProp,
     clampLinesToDocument: PropTypes.bool,
+    straight: PropTypes.bool,
+    imgDOMRect: PropTypes.object,
   };
 
   static defaultProps = {
@@ -90,6 +92,8 @@ export default class CanvasDraw extends PureComponent {
     mouseZoomFactor: 0.01,
     zoomExtents: { min: 0.33, max: 3 },
     clampLinesToDocument: false,
+    straight: false,
+    imgDOMRect: undefined
   };
 
   ///// public API /////////////////////////////////////////////////////////////
@@ -101,7 +105,7 @@ export default class CanvasDraw extends PureComponent {
     this.ctx = {};
 
     this.catenary = new Catenary();
-
+    this.startPoint = null;
     this.points = [];
     this.lines = [];
     this.erasedLines = [];
@@ -374,6 +378,7 @@ export default class CanvasDraw extends PureComponent {
           const isInterface = name === "interface";
           return (
             <canvas
+              id={name}
               key={name}
               ref={(canvas) => {
                 if (canvas) {
@@ -400,6 +405,25 @@ export default class CanvasDraw extends PureComponent {
     );
   }
 
+  // 画直线
+  drawStraightLine = (e) => {
+    const ctx = this.ctx.line;
+    if (this.startPoint && ctx) {
+      const width = ctx.canvas.width;
+      const height = ctx.canvas.height;
+      const p = clientPointFromEvent(e);
+      ctx.globalAlpha = 0.5;
+      ctx.setLineDash([this.props.brushRadius * 6, this.props.brushRadius*2])
+      ctx.clearRect(0, 0, width, height);
+      ctx.beginPath();
+      ctx.strokeStyle = this.props.brushColor;
+      ctx.lineWidth = this.props.brushRadius * 2;
+      ctx.moveTo(this.startPoint.clientX,this.startPoint.clientY);
+      
+      ctx.lineTo(p.clientX,p.clientY);
+      ctx.stroke();
+    }
+  };
   ///// Event Handlers
 
   handleWheel = (e) => {
@@ -408,17 +432,24 @@ export default class CanvasDraw extends PureComponent {
 
   handleDrawStart = (e) => {
     this.interactionSM = this.interactionSM.handleDrawStart(e, this);
+    this.startPoint = clientPointFromEvent(e);
     this.mouseHasMoved = true;
   };
 
   handleDrawMove = (e) => {
-    this.interactionSM = this.interactionSM.handleDrawMove(e, this);
-    this.mouseHasMoved = true;
+    if (this.props.straight) {
+      this.drawStraightLine(e);
+    } else {
+      this.interactionSM = this.interactionSM.handleDrawMove(e, this);
+      this.mouseHasMoved = true;
+    }
   };
 
   handleDrawEnd = (e) => {
     this.interactionSM = this.interactionSM.handleDrawEnd(e, this);
     this.mouseHasMoved = true;
+    this.startPoint = null;
+    this.ctx.line.clearRect(0, 0, window.innerWidth, window.innerHeight);
   };
 
   applyView = () => {
@@ -455,6 +486,7 @@ export default class CanvasDraw extends PureComponent {
         this.setCanvasSize(this.canvas.drawing, width, height);
         this.setCanvasSize(this.canvas.temp, width, height);
         this.setCanvasSize(this.canvas.grid, width, height);
+        this.setCanvasSize(this.canvas.line, width, height);
 
         this.coordSystem.documentSize = { width, height };
         this.drawGrid(this.ctx.grid);
@@ -663,7 +695,22 @@ export default class CanvasDraw extends PureComponent {
     this.image.crossOrigin = "anonymous";
 
     // Draw the image once loaded
-    this.image.onload = this.redrawImage;
+    // this.image.onload = this.redrawImage;
+    this.image.onload = () => {
+      const {
+        bottom,
+        height,
+        left,
+        right,
+        top,
+        width,
+        x,
+        y,
+      } = this.props.imgDOMRect || {}
+      this.image &&
+      this.image.complete &&
+      drawImage({ ctx: this.ctx.grid, img: this.image, x, y, w: width, h: height });
+    };
     this.image.src = this.props.imgSrc;
   };
 

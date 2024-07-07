@@ -4,7 +4,7 @@
  * 
  * Note: img must be fully loaded or have correct width & height set.
  */
-export default function drawImageProp({ ctx, img, x, y, w, h, offsetX, offsetY } = {}) {
+export default function drawImageProp({ctx, img, x, y, w, h, offsetX, offsetY} = {}) {
   // Defaults
   if (typeof x !== "number") x = 0;
   if (typeof y !== "number") y = 0;
@@ -19,59 +19,36 @@ export default function drawImageProp({ ctx, img, x, y, w, h, offsetX, offsetY }
   if (offsetX > 1) offsetX = 1;
   if (offsetY > 1) offsetY = 1;
 
-  const imgWidth = img.width;
-  const imgHeight = img.height;
-  const aspectRatioImg = imgWidth / imgHeight;
-  const aspectRatioCanvas = w / h;
+  var iw = img.width,
+    ih = img.height,
+    r = Math.min(w / iw, h / ih),
+    nw = iw * r, // new prop. width
+    nh = ih * r, // new prop. height
+    cx,
+    cy,
+    cw,
+    ch,
+    ar = 1;
 
-  let scaledWidth, scaledHeight, dx, dy;
+  // decide which gap to fill
+  if (nw < w) ar = w / nw;
+  if (Math.abs(ar - 1) < 1e-14 && nh < h) ar = h / nh; // updated
+  nw *= ar;
+  nh *= ar;
 
-  if (aspectRatioImg > aspectRatioCanvas) {
-    // 图片的宽高比大于画布的宽高比，以高度为准缩放
-    scaledHeight = h;
-    scaledWidth = scaledHeight * aspectRatioImg;
-    dx = (w - scaledWidth) / 2;
-    dy = 0;
-  } else {
-    // 图片的宽高比小于或等于画布的宽高比，以宽度为准缩放
-    scaledWidth = w;
-    scaledHeight = scaledWidth / aspectRatioImg;
-    dx = 0;
-    dy = (h - scaledHeight) / 2;
-  }
-  console.log(scaledWidth, scaledHeight);
-  ctx.drawImage(img, dx, dy, scaledWidth, scaledHeight);
+  // calc source rectangle
+  cw = iw / (nw / w);
+  ch = ih / (nh / h);
 
-  // var iw = img.width,
-  //   ih = img.height,
-  //   r = Math.min(w / iw, h / ih),
-  //   nw = iw * r, // new prop. width
-  //   nh = ih * r, // new prop. height
-  //   cx,
-  //   cy,
-  //   cw,
-  //   ch,
-  //   ar = 1;
+  cx = (iw - cw) * offsetX;
+  cy = (ih - ch) * offsetY;
 
-  // // decide which gap to fill
-  // if (nw < w) ar = w / nw;
-  // if (Math.abs(ar - 1) < 1e-14 && nh < h) ar = h / nh; // updated
-  // nw *= ar;
-  // nh *= ar;
+  // make sure source rectangle is valid
+  if (cx < 0) cx = 0;
+  if (cy < 0) cy = 0;
+  if (cw > iw) cw = iw;
+  if (ch > ih) ch = ih;
 
-  // // calc source rectangle
-  // cw = iw / (nw / w);
-  // ch = ih / (nh / h);
-
-  // cx = (iw - cw) * offsetX;
-  // cy = (ih - ch) * offsetY;
-
-  // // make sure source rectangle is valid
-  // if (cx < 0) cx = 0;
-  // if (cy < 0) cy = 0;
-  // if (cw > iw) cw = iw;
-  // if (ch > ih) ch = ih;
-
-  // // fill image in dest. rectangle
-  // ctx.drawImage(img, cx, cy, cw, ch, x, y, w, h);
+  // fill image in dest. rectangle
+  ctx.drawImage(img, cx, cy, cw, ch, x, y, w, h);
 }

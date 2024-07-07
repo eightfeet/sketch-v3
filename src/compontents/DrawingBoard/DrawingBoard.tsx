@@ -1,5 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import CanvasDraw from "./Drawer";
 import s from './DrawingBoard.module.scss';
+import { painter as store } from "~/store";
 import { Space, Stepper } from 'antd-mobile';
 import Pen from './Icons/Pen';
 import classNames from 'classnames';
@@ -9,28 +11,29 @@ import Undo from './Icons/Undo';
 import Close from './Icons/Close';
 import Color from './Icons/Color';
 import Play from './Icons/Play';
+import Stop from './Icons/Stop';
 import { ColorResult, SketchPicker } from 'react-color';
 import { useSnapshot } from 'valtio';
 import { useDebounce } from 'use-debounce';
-import { painter as painterstore } from "~/store";
 import { Environment, environment } from '~/core/helper';
-import CanvasDraw from "./Drawer";
+import Curve from './Icons/Curve';
+import Straight from './Icons/Straight';
 
 interface Props {
-    visible?: boolean,
+    visible?: boolean
     bgimg?: { url: string },
+    imgDOMRect?: DOMRect
 }
 
 const LOCALITEMNAME = 'dwxSavedDrawing';
-const DrawingBoard: React.FC<Props> = ({ visible, bgimg }) => {
-    const storeR = useSnapshot(painterstore);
+const DrawingBoard: React.FC<Props> = ({ visible, bgimg, imgDOMRect }) => {
+    const storeR = useSnapshot(store);
     const [shoot, setShoot] = useState<string>();
     const painter = useRef<any>();
     const saveCanvasRef = useRef<HTMLCanvasElement>(null);
     const imageContentRef = useRef<HTMLDivElement>(null);
     const imgSaved = useRef<string>();
-    const [, setPlayer] = useState(false);
-
+    const [player, setPlayer] = useState(false);
     const getDataUrlToImg = useCallback((canvas: HTMLCanvasElement) => {
         const dataurl = canvas?.toDataURL();
         const img = new Image();
@@ -38,12 +41,12 @@ const DrawingBoard: React.FC<Props> = ({ visible, bgimg }) => {
         return img;
     }, []);
     // 保存图片
-    const onSave = useCallback(async (alpha?: boolean) => {
+    const onSave = useCallback(async (alph?: boolean) => {
         if (!saveCanvasRef.current) return;
         const ctx = saveCanvasRef.current?.getContext("2d");
         if (!ctx) return;
-        const Width = window.innerWidth;
-        const Height = window.innerHeight;
+        let Width = window.innerWidth;
+        let Height = window.innerHeight;
         saveCanvasRef.current.width = Width;
         saveCanvasRef.current.height = Height;
 
@@ -54,10 +57,9 @@ const DrawingBoard: React.FC<Props> = ({ visible, bgimg }) => {
 
         imageContentRef.current?.appendChild(gridImg);
         gridImg.onload = () => {
-            if (alpha !== true) {
+            if (alph !== true) {
                 ctx.drawImage(gridImg, 0, 0);
             }
-
             imageContentRef.current?.appendChild(drwaImg);
             drwaImg.onload = async () => {
                 ctx.drawImage(drwaImg, 0, 0);
@@ -129,7 +131,7 @@ const DrawingBoard: React.FC<Props> = ({ visible, bgimg }) => {
     const [color, setColor] = useState(storeR.lineColor);
     const [debounceColor] = useDebounce(color, 1000);
     useMemo(() => {
-        painterstore.lineColor = debounceColor;
+        store.lineColor = debounceColor;
     }, [debounceColor])
 
     const handleColor = useCallback(
@@ -152,7 +154,7 @@ const DrawingBoard: React.FC<Props> = ({ visible, bgimg }) => {
     const [showLine, setShowLine] = useState(false);
     const [debounceLineWidth] = useDebounce(lineWidth, 1000);
     useMemo(() => {
-        painterstore.lineWidth = Number(debounceLineWidth) || 0;
+        store.lineWidth = Number(debounceLineWidth) || 0;
     }, [debounceLineWidth])
     const handleLineWidth = useCallback(
         () => {
@@ -164,7 +166,7 @@ const DrawingBoard: React.FC<Props> = ({ visible, bgimg }) => {
     const handleClose = useCallback(
         () => {
             // 关闭画板
-            painterstore.showPanter = false;
+            store.showPanter = false;
             setPlayer(false);
             setShowColor(false);
             localStorage.removeItem(LOCALITEMNAME)
@@ -182,13 +184,21 @@ const DrawingBoard: React.FC<Props> = ({ visible, bgimg }) => {
                 onSave(true)
             }
         },
-        [longTouchTime, onSave],)
-
+        [longTouchTime, onSave],
+    );
+    const [straight, setStraight] = useState(false);
     if (!visible) return null;
     return (
         <div className={s.root}>
             <div className={s.toolbar}>
                 <div className={s.btns}>
+                    <div
+                        className={classNames(s.block)}
+                        onClick={() => setStraight(v => !v)}
+                    >
+                        {!straight ? <Curve />
+                            : <Straight />}
+                    </div>
                     <div
                         className={classNames(s.block)}
                         onClick={handleLineWidth}
@@ -253,11 +263,11 @@ const DrawingBoard: React.FC<Props> = ({ visible, bgimg }) => {
                     </div>
                     <div
                         className={classNames(s.block, { [s.act]: false })}
-                        style={{opacity: 0}}
-                        onPointerDown={() => setLongTouchTime(Date.now())} 
+                        style={{ opacity: 0 }}
+                        onPointerDown={() => setLongTouchTime(Date.now())}
                         onPointerUp={onChackLongTouch}
                     >
-                        <Saves  />
+                        <Saves />
                     </div>
                 </div>
 
@@ -316,7 +326,9 @@ const DrawingBoard: React.FC<Props> = ({ visible, bgimg }) => {
                     enablePanAndZoom: true,
                     clampLinesToDocument: false,
                     mouseZoomFactor: 0.01,
-                    zoomExtents: { min: 0.1, max: 3 },
+                    zoomExtents: { min: 0.3, max: 3 },
+                    straight,
+                    imgDOMRect
                 }}
             />
             {

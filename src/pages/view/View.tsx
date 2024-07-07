@@ -41,9 +41,12 @@ const View: React.FC<Props> = ({ name = "view" }) => {
 
   const [wranTime, setWranTime] = useState(false);
   const [imgIndex, setImgIndex] = useState(0);
+  const [imgDOMRect, setImgDOMRect] = useState<DOMRect>();
 
   const handleIndexChange = useCallback(
-    (index: number) => setImgIndex(index),
+    (index: number) => {
+      setImgIndex(index)
+    },
     [],
   )
 
@@ -59,7 +62,7 @@ const View: React.FC<Props> = ({ name = "view" }) => {
   const onUpdate = useCallback(
     (remainingTime: number) => {
       if (remainingTime === warnStart) {
-        if(isWarn){window.warnPlayer?.play();}
+        if (isWarn) { window.warnPlayer?.play(); }
         setWranTime(true);
       }
       if (remainingTime < warnStart) {
@@ -93,14 +96,25 @@ const View: React.FC<Props> = ({ name = "view" }) => {
     document.addEventListener('contextmenu', (event) => {
       event.preventDefault();
     }, false);
-  
+
     return () => {
       document.removeEventListener('contextmenu', (event) => {
         event.preventDefault();
       }, false);
     }
   }, [])
-  
+
+  const showDrawingBoard = useCallback(
+    () => {
+      painter.showPanter = true;
+      const dom = document.querySelectorAll('.adm-image-viewer-slide')?.[imgIndex]?.querySelector('.adm-image-viewer-image-wrapper')?.children?.[0];
+      if (dom) {
+        const imgParams = dom.getBoundingClientRect();
+        setImgDOMRect(imgParams);
+      }
+    },
+    [imgIndex],
+  );
 
   return <div className={classNames(s.root, {
     [s.gray]: isBlack
@@ -116,7 +130,7 @@ const View: React.FC<Props> = ({ name = "view" }) => {
           fontSize={24}
           style={{ borderRadius: 28, overflow: "hidden", background: isBlack ? "#000" : "inherit" }}
         />
-        <EditSOutline onClick={() => painter.showPanter = true} fontSize={24} />
+        <EditSOutline onClick={showDrawingBoard} fontSize={24} />
       </Space>
     } /> : null}
     <ImageViewer.Multi
@@ -158,7 +172,7 @@ const View: React.FC<Props> = ({ name = "view" }) => {
       historyRecords={1000}
       auth={userR.auth}
     /> */}
-    <DrawingBoard visible={painterR.showPanter} bgimg={selected[imgIndex]} />
+    <DrawingBoard visible={painterR.showPanter} bgimg={selected[imgIndex]} imgDOMRect={imgDOMRect} />
   </div>;
 };
 
