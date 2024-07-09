@@ -48,6 +48,7 @@ export interface PainterData {
 
 export const painter = proxy<PainterData>({
   showPanter: false,
+  lineColor: "#ff0000"
 });
 
 try {
