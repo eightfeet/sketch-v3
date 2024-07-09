@@ -63,6 +63,7 @@ export default class CanvasDraw extends PureComponent {
     zoomExtents: boundsProp,
     clampLinesToDocument: PropTypes.bool,
     straight: PropTypes.bool,
+    lineType: PropTypes.string,
     imgDOMRect: PropTypes.object,
   };
 
@@ -93,6 +94,8 @@ export default class CanvasDraw extends PureComponent {
     zoomExtents: { min: 0.33, max: 3 },
     clampLinesToDocument: false,
     straight: false,
+    // straight curve circle
+    // lineType: "circle",
     imgDOMRect: undefined
   };
 
@@ -115,6 +118,8 @@ export default class CanvasDraw extends PureComponent {
     this.isDrawing = false;
     this.isPressing = false;
     this.deferRedrawOnViewChange = false;
+
+    this.arcParams = undefined;
 
     this.interactionSM = new DefaultState();
     this.coordSystem = new CoordinateSystem({
@@ -405,23 +410,58 @@ export default class CanvasDraw extends PureComponent {
     );
   }
 
+  drawCircle = (ctx, isGuide) => {
+      if (!this.arcParams?.length) return;
+      if (isGuide) {
+        ctx.globalAlpha = 0.5;
+        ctx.setLineDash([this.props.brushRadius * 6, this.props.brushRadius*2])
+      }
+      ctx.beginPath();
+      ctx.strokeStyle = this.props.brushColor;
+      ctx.lineWidth = this.props.brushRadius * 2;
+      ctx.arc(...this.arcParams);
+      ctx.stroke();
+  };
+  
   // 画直线
   drawStraightLine = (e) => {
+    // 触控缩放模式下不绘制
+    if (e.touches && e.touches.length >= 2) {
+      return;
+    }
     const ctx = this.ctx.line;
     if (this.startPoint && ctx) {
       const width = ctx.canvas.width;
       const height = ctx.canvas.height;
-      const p = clientPointFromEvent(e);
+      const p = this.coordSystem.clientPointToViewPoint(clientPointFromEvent(e));
       ctx.globalAlpha = 0.5;
       ctx.setLineDash([this.props.brushRadius * 6, this.props.brushRadius*2])
-      ctx.clearRect(0, 0, width, height);
+      ctx.clearRect(this.coordSystem._view.x, this.coordSystem._view.y, width, height);
+      this.clearWindow(this.ctx.line);
       ctx.beginPath();
       ctx.strokeStyle = this.props.brushColor;
       ctx.lineWidth = this.props.brushRadius * 2;
-      ctx.moveTo(this.startPoint.clientX,this.startPoint.clientY);
+      ctx.moveTo(this.startPoint.x,this.startPoint.y);
       
-      ctx.lineTo(p.clientX,p.clientY);
+      ctx.lineTo(p.x, p.y);
       ctx.stroke();
+
+      if (this.props.lineType === 'circle') {
+        // straight curve circle
+        const centerP = {
+          x: (this.startPoint.x + p.x) / 2,
+          y: (this.startPoint.y + p.y) / 2,
+        }
+        const radius = () => {
+          const dx = this.startPoint.x - p.x;
+          const dy = this.startPoint.y - p.y;
+          return Math.sqrt(dx * dx + dy * dy)/2;
+        }
+        
+        this.arcParams = [centerP.x, centerP.y, radius(), 0, 2 * Math.PI];
+        this.drawCircle(ctx, true)
+      }
+      
     }
   };
   ///// Event Handlers
@@ -432,24 +472,46 @@ export default class CanvasDraw extends PureComponent {
 
   handleDrawStart = (e) => {
     this.interactionSM = this.interactionSM.handleDrawStart(e, this);
-    this.startPoint = clientPointFromEvent(e);
+    this.startPoint = this.coordSystem.clientPointToViewPoint(clientPointFromEvent(e))
     this.mouseHasMoved = true;
   };
 
   handleDrawMove = (e) => {
-    if (this.props.straight) {
-      this.drawStraightLine(e);
-    } else {
+    const drwwCurve = () => {
       this.interactionSM = this.interactionSM.handleDrawMove(e, this);
       this.mouseHasMoved = true;
+    }
+    
+    if (this.props.straight) {
+      if (this.props.enablePanAndZoom && e.touches && e.touches.length >= 2) {
+        drwwCurve();
+      } else {
+        this.drawStraightLine(e);
+      }
+    } else {
+      drwwCurve();
     }
   };
 
   handleDrawEnd = (e) => {
+    
+    this.clearWindow(this.ctx.line);
+    if (this.props.lineType === 'circle') {
+      this.startPoint = null;
+      this.interactionSM = this.interactionSM.handleDrawEnd(e, this);
+      this.mouseHasMoved = false;
+      this.clearWindow(this.ctx.line);
+      let ctx = this.canvas.drawing.getContext("2d");
+      this.drawCircle(ctx);
+      this.startPoint = null;
+      this.arcParams = null;
+      return
+    }
+    this.startPoint = null;
+      this.arcParams = null;
     this.interactionSM = this.interactionSM.handleDrawEnd(e, this);
     this.mouseHasMoved = true;
-    this.startPoint = null;
-    this.ctx.line.clearRect(0, 0, window.innerWidth, window.innerHeight);
+    
   };
 
   applyView = () => {
