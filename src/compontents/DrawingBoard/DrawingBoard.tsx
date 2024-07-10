@@ -326,7 +326,7 @@ const DrawingBoard: React.FC<Props> = ({ visible, bgimg, imgDOMRect }) => {
                     enablePanAndZoom: true,
                     clampLinesToDocument: false,
                     mouseZoomFactor: 0.01,
-                    zoomExtents: { min: 0.3, max: 3 },
+                    zoomExtents: { min: 0.3, max: 8 },
                     straight,
                     imgDOMRect
                 }}

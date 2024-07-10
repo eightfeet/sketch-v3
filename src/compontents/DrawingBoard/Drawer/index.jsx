@@ -483,8 +483,9 @@ export default class CanvasDraw extends PureComponent {
     }
     
     if (this.props.straight) {
-      if (this.props.enablePanAndZoom && e.touches && e.touches.length >= 2) {
+      if ((this.props.enablePanAndZoom && e.touches && e.touches.length >= 2) || (e.ctrlKey && this.props.enablePanAndZoom)) {
         drwwCurve();
+        this.startPoint = undefined;
       } else {
         this.drawStraightLine(e);
       }
@@ -575,9 +576,20 @@ export default class CanvasDraw extends PureComponent {
   };
 
   redrawImage = () => {
-    this.image &&
-      this.image.complete &&
-      drawImage({ ctx: this.ctx.grid, img: this.image });
+      if (this.image && this.image.complete ) {
+        const {
+          bottom,
+          height,
+          left,
+          right,
+          top,
+          width,
+          x,
+          y,
+        } = this.props.imgDOMRect || {}
+        this.clearWindow(this.ctx.grid);
+        drawImage({ ctx: this.ctx.grid, img: this.image, x, y, w: width, h: height });
+      }
   };
 
   simulateDrawingLines = ({ lines, immediate }) => {
@@ -758,6 +770,7 @@ export default class CanvasDraw extends PureComponent {
 
     // Draw the image once loaded
     // this.image.onload = this.redrawImage;
+
     this.image.onload = () => {
       const {
         bottom,
@@ -769,9 +782,10 @@ export default class CanvasDraw extends PureComponent {
         x,
         y,
       } = this.props.imgDOMRect || {}
-      this.image &&
-      this.image.complete &&
-      drawImage({ ctx: this.ctx.grid, img: this.image, x, y, w: width, h: height });
+      if (this.image && this.image.complete) {
+        this.clearWindow(this.ctx.grid);
+        drawImage({ ctx: this.ctx.grid, img: this.image, x, y, w: width, h: height });
+      }
     };
     this.image.src = this.props.imgSrc;
   };
